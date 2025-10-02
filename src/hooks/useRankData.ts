@@ -17,7 +17,7 @@ export function useRankData(): UseRankDataState {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch("/rank-data.json");
+        const response = await fetch("rank-data.json");
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
