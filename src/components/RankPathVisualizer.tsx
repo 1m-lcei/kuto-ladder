@@ -19,7 +19,13 @@ export function RankPathVisualizer({ path }: RankPathVisualizerProps) {
             <li
               data-content={index === 0 ? "📌" : `${index}`}
               key={`${index}-${step.currentRank}`}
-              className={index < 6 ? "step step-primary" : "step"}
+              className={
+                index < 6
+                  ? "step step-primary"
+                  : 11 <= path.length && index < 11
+                    ? "step step-secondary"
+                    : "step"
+              }
             >
               <div className="flex items-baseline ml-1 text-left">
                 <span className="text-lg font-semibold text-right min-w-[4.5rem]">
@@ -35,7 +41,13 @@ export function RankPathVisualizer({ path }: RankPathVisualizerProps) {
         })}
         <li
           data-content={path.length}
-          className={path.length < 6 ? "step step-primary" : "step"}
+          className={
+            path.length < 6
+              ? "step step-primary"
+              : 11 <= path.length && path.length < 11
+                ? "step step-secondary"
+                : "step"
+          }
         >
           <div className="ml-1 text-lg font-semibold text-right min-w-[4.5rem]">
             1位
