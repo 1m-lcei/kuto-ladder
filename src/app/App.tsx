@@ -16,6 +16,7 @@ import { calculatePath } from "../utils/rankCalculator";
 import { ThemeController } from "../components/ThemeController";
 import { ErrorIcon } from "../components/SvgIcons";
 import { HeaderMenu } from "../components/HeaderMenu";
+import { loadConfig, saveConfig } from "../utils/config";
 
 function subscribeTheme(callback: () => void) {
   const matchMedia = window.matchMedia("(prefers-color-scheme: dark)");
@@ -70,9 +71,11 @@ function PathResult({
 
 function App() {
   const id = useId();
+  const initConfig = useMemo(() => loadConfig(), []);
+  
   // ユーザーの直接の入力を文字列として保持
   const [inputValue, setInputValue] = useState<string>("");
-  const [strategy, setStrategy] = useState<PathStrategy>("efficient");
+  const [strategy, setStrategy] = useState<PathStrategy>(initConfig.strategy ?? "efficient");
 
   const systemPrefersDark = useSyncExternalStore(
     subscribeTheme,
@@ -80,9 +83,21 @@ function App() {
     () => false,
   );
   const [manualTheme, setManualTheme] = useState<"emerald" | "night" | null>(
-    null,
+    initConfig.theme ?? null,
   );
   const currentTheme = manualTheme ?? (systemPrefersDark ? "night" : "emerald");
+
+  const handleThemeChange = (checked: boolean) => {
+    const newTheme = checked ? "night" : "emerald";
+    setManualTheme(newTheme);
+    saveConfig({ theme: newTheme });
+  };
+
+  const handleStrategyChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const newStrategy = e.target.value as PathStrategy;
+    setStrategy(newStrategy);
+    saveConfig({ strategy: newStrategy });
+  };
 
   // 入力値をデバウンス
   const debouncedInputValue = useDebounce(inputValue, 200);
@@ -99,9 +114,7 @@ function App() {
         <div className="flex justify-end items-center gap-2">
           <ThemeController
             currentTheme={currentTheme}
-            onChange={(checked) =>
-              setManualTheme(checked ? "night" : "emerald")
-            }
+            onChange={handleThemeChange}
           />
           <HeaderMenu />
         </div>
@@ -134,9 +147,7 @@ function App() {
                   <select
                     className="select select-bordered select-primary w-full sm:w-auto"
                     value={strategy}
-                    onChange={(e) =>
-                      setStrategy(e.target.value as PathStrategy)
-                    }
+                    onChange={handleStrategyChange}
                   >
                     <option value="efficient">🏅 登頂</option>
                     <option value="target-second">🥈 2位狙い</option>

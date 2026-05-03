@@ -12,6 +12,17 @@
   <meta property="og:url" content="https://1m-lcei.github.io/kuto-ladder/" />
   <meta property="og:description" content="戦術対抗戦 (PvP) の順位経路を計算・表示するWebアプリケーションです。" />
   <meta property="og:locale" content="ja_JP" />
+  <script>
+    try {
+      var conf = localStorage.getItem('kuto-ladder-config');
+      if (conf) {
+        var parsed = JSON.parse(conf);
+        if (parsed.version === 1 && parsed.theme) {
+          document.documentElement.setAttribute('data-theme', parsed.theme);
+        }
+      }
+    } catch (e) {}
+  </script>
 </head>
 
 <body>
