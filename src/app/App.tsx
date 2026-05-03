@@ -15,6 +15,7 @@ import type { PathStep, PathStrategy } from "../types/types";
 import { calculatePath } from "../utils/rankCalculator";
 import { ThemeController } from "../components/ThemeController";
 import { ErrorIcon } from "../components/SvgIcons";
+import { HeaderMenu } from "../components/HeaderMenu";
 
 function subscribeTheme(callback: () => void) {
   const matchMedia = window.matchMedia("(prefers-color-scheme: dark)");
@@ -95,13 +96,14 @@ function App() {
   return (
     <div className="container mx-auto min-h-screen p-4">
       <article>
-        <div className="flex justify-end">
+        <div className="flex justify-end items-center gap-2">
           <ThemeController
             currentTheme={currentTheme}
             onChange={(checked) =>
               setManualTheme(checked ? "night" : "emerald")
             }
           />
+          <HeaderMenu />
         </div>
 
         <header className="mb-4 relative flex justify-center items-center">

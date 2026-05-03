@@ -1,14 +1,12 @@
-import type { FC } from "react";
-
 interface ThemeControllerProps {
   currentTheme: "emerald" | "night";
   onChange: (checked: boolean) => void;
 }
 
-export const ThemeController: FC<ThemeControllerProps> = ({
+export function ThemeController({
   currentTheme,
   onChange,
-}) => {
+}: ThemeControllerProps) {
   return (
     <label className="swap swap-rotate btn btn-ghost btn-circle">
       <input
