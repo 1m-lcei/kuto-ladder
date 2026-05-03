@@ -44,7 +44,10 @@ function precomputeRankData() {
         maxStepsForCurrentRank,
         steps[nextRank],
       );
-      minDistTo2ForCurrentRank = Math.min(minDistTo2ForCurrentRank, distTo2[nextRank]);
+      minDistTo2ForCurrentRank = Math.min(
+        minDistTo2ForCurrentRank,
+        distTo2[nextRank],
+      );
     }
 
     if (minDistForCurrentRank !== Infinity) {

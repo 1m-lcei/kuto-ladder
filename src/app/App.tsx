@@ -8,15 +8,15 @@ import {
   useState,
   useSyncExternalStore,
 } from "react";
-import { RankPathVisualizer } from "../components/RankPathVisualizer";
-import { useDebounce } from "../hooks/useDebounce";
 import { fetchRankData } from "../api/fetchRankData";
-import type { PathStep, PathStrategy } from "../types/types";
-import { calculatePath } from "../utils/rankCalculator";
-import { ThemeController } from "../components/ThemeController";
-import { ErrorIcon } from "../components/SvgIcons";
 import { HeaderMenu } from "../components/HeaderMenu";
+import { RankPathVisualizer } from "../components/RankPathVisualizer";
+import { ErrorIcon } from "../components/SvgIcons";
+import { ThemeController } from "../components/ThemeController";
+import { useDebounce } from "../hooks/useDebounce";
+import type { PathStep, PathStrategy } from "../types/types";
 import { loadConfig, saveConfig } from "../utils/config";
+import { calculatePath } from "../utils/rankCalculator";
 
 function subscribeTheme(callback: () => void) {
   const matchMedia = window.matchMedia("(prefers-color-scheme: dark)");
@@ -72,10 +72,12 @@ function PathResult({
 function App() {
   const id = useId();
   const initConfig = useMemo(() => loadConfig(), []);
-  
+
   // ユーザーの直接の入力を文字列として保持
   const [inputValue, setInputValue] = useState<string>("");
-  const [strategy, setStrategy] = useState<PathStrategy>(initConfig.strategy ?? "efficient");
+  const [strategy, setStrategy] = useState<PathStrategy>(
+    initConfig.strategy ?? "efficient",
+  );
 
   const systemPrefersDark = useSyncExternalStore(
     subscribeTheme,
@@ -130,7 +132,9 @@ function App() {
             <form className="w-full max-w-4xl ">
               <div className="flex flex-wrap gap-4 items-center">
                 <div className="flex items-center gap-2 grow">
-                  <label htmlFor={id} className="label-text whitespace-nowrap">開始ランク</label>
+                  <label htmlFor={id} className="label-text whitespace-nowrap">
+                    開始ランク
+                  </label>
                   <input
                     type="number"
                     id={id}

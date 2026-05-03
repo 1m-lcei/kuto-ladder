@@ -59,7 +59,9 @@ export function calculatePath(
     });
 
     const nextCurrentRank =
-      (strategy === "efficient" || strategy === "target-second") ? minValidRank : maxValidRank;
+      strategy === "efficient" || strategy === "target-second"
+        ? minValidRank
+        : maxValidRank;
 
     if (nextCurrentRank >= currentRank) {
       console.error(

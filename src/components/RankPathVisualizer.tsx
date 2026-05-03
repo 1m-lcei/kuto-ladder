@@ -6,7 +6,10 @@ interface RankPathVisualizerProps {
   targetRank?: number;
 }
 
-export function RankPathVisualizer({ path, targetRank = 1 }: RankPathVisualizerProps) {
+export function RankPathVisualizer({
+  path,
+  targetRank = 1,
+}: RankPathVisualizerProps) {
   if (path.length === 0) {
     return null; // パスが空の場合は何も表示しない
   }

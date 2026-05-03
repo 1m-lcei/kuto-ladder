@@ -31,7 +31,6 @@ export function ErrorIcon(props: SVGProps<SVGSVGElement>) {
   );
 }
 
-
 // SVG Logos
 // CC0 1.0 Universal
 export function GithubIcon(props: SVGProps<SVGSVGElement>) {

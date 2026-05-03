@@ -32,7 +32,7 @@ export function saveConfig(config: Partial<AppConfig>) {
 
     // テーマが変更された場合は即座にDOMにも反映する（DaisyUIの設定と同期）
     if (updated.theme) {
-      document.documentElement.setAttribute('data-theme', updated.theme);
+      document.documentElement.setAttribute("data-theme", updated.theme);
     }
   } catch (e) {
     console.error("Failed to save config", e);
