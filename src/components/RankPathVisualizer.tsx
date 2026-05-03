@@ -28,7 +28,7 @@ export function RankPathVisualizer({ path }: RankPathVisualizerProps) {
               }
             >
               <div className="flex items-baseline ml-1 text-left">
-                <span className="text-lg font-semibold text-right min-w-[4.5rem]">
+                <span className="text-lg font-semibold text-right min-w-18">
                   {step.currentRank}位
                 </span>
                 <div className="flex items-baseline ml-1 text-neutral-400">
@@ -49,7 +49,7 @@ export function RankPathVisualizer({ path }: RankPathVisualizerProps) {
                 : "step"
           }
         >
-          <div className="ml-1 text-lg font-semibold text-right min-w-[4.5rem]">
+          <div className="ml-1 text-lg font-semibold text-right min-w-18">
             1位
           </div>
         </li>
