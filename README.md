@@ -1,5 +1,5 @@
 # kuto-ladder
-This repository is a web application that displays rank progression paths from a specified starting rank in Tactical Challenge (PvP) via two different modes.
+This repository is a web application that displays rank progression paths from a specified starting rank in Tactical Challenge (PvP) via 3 different modes.
 
 You can try it out at:
 
