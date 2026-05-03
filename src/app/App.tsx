@@ -6,7 +6,6 @@ import {
   useId,
   useMemo,
   useState,
-  useSyncExternalStore,
 } from "react";
 import { fetchRankData } from "../api/fetchRankData";
 import { HeaderMenu } from "../components/HeaderMenu";
@@ -14,19 +13,10 @@ import { RankPathVisualizer } from "../components/RankPathVisualizer";
 import { ErrorIcon } from "../components/SvgIcons";
 import { ThemeController } from "../components/ThemeController";
 import { useDebounce } from "../hooks/useDebounce";
+import { useTheme } from "../hooks/useTheme";
 import type { PathStep, PathStrategy } from "../types/types";
 import { loadConfig, saveConfig } from "../utils/config";
 import { calculatePath } from "../utils/rankCalculator";
-
-function subscribeTheme(callback: () => void) {
-  const matchMedia = window.matchMedia("(prefers-color-scheme: dark)");
-  matchMedia.addEventListener("change", callback);
-  return () => matchMedia.removeEventListener("change", callback);
-}
-
-function getSnapshot() {
-  return window.matchMedia("(prefers-color-scheme: dark)").matches;
-}
 
 class ErrorBoundary extends Component<
   { children: ReactNode; fallback: (error: Error) => ReactNode },
@@ -79,21 +69,9 @@ function App() {
     initConfig.strategy ?? "efficient",
   );
 
-  const systemPrefersDark = useSyncExternalStore(
-    subscribeTheme,
-    getSnapshot,
-    () => false,
-  );
-  const [manualTheme, setManualTheme] = useState<"emerald" | "night" | null>(
+  const { currentTheme, handleThemeChange } = useTheme(
     initConfig.theme ?? null,
   );
-  const currentTheme = manualTheme ?? (systemPrefersDark ? "night" : "emerald");
-
-  const handleThemeChange = (checked: boolean) => {
-    const newTheme = checked ? "night" : "emerald";
-    setManualTheme(newTheme);
-    saveConfig({ theme: newTheme });
-  };
 
   const handleStrategyChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const newStrategy = e.target.value as PathStrategy;
