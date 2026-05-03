@@ -1,63 +1,13 @@
-import {
-  Component,
-  type ReactNode,
-  Suspense,
-  use,
-  useId,
-  useMemo,
-  useState,
-} from "react";
-import { fetchRankData } from "../api/fetchRankData";
+import { Suspense, useId, useMemo, useState } from "react";
+import { ErrorBoundary } from "../components/ErrorBoundary";
 import { HeaderMenu } from "../components/HeaderMenu";
-import { RankPathVisualizer } from "../components/RankPathVisualizer";
+import { PathResult } from "../components/PathResult";
 import { ErrorIcon } from "../components/SvgIcons";
 import { ThemeController } from "../components/ThemeController";
 import { useDebounce } from "../hooks/useDebounce";
 import { useTheme } from "../hooks/useTheme";
-import type { PathStep, PathStrategy } from "../types/types";
+import type { PathStrategy } from "../types/types";
 import { loadConfig, saveConfig } from "../utils/config";
-import { calculatePath } from "../utils/rankCalculator";
-
-class ErrorBoundary extends Component<
-  { children: ReactNode; fallback: (error: Error) => ReactNode },
-  { error: Error | null }
-> {
-  constructor(props: {
-    children: ReactNode;
-    fallback: (error: Error) => ReactNode;
-  }) {
-    super(props);
-    this.state = { error: null };
-  }
-  static getDerivedStateFromError(error: Error) {
-    return { error };
-  }
-  render() {
-    return this.state.error
-      ? this.props.fallback(this.state.error)
-      : this.props.children;
-  }
-}
-
-function PathResult({
-  startRank,
-  strategy,
-}: {
-  startRank: number;
-  strategy: PathStrategy;
-}) {
-  const rankData = use(fetchRankData(strategy));
-  const path: PathStep[] = useMemo(() => {
-    return calculatePath(startRank, strategy, rankData);
-  }, [startRank, strategy, rankData]);
-
-  return (
-    <RankPathVisualizer
-      path={path}
-      targetRank={strategy === "target-second" ? 2 : 1}
-    />
-  );
-}
 
 function App() {
   const id = useId();
