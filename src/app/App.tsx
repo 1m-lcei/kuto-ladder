@@ -108,7 +108,7 @@ function App() {
   const startRank = Number(debouncedInputValue);
   const isInvalidRank =
     debouncedInputValue !== "" &&
-    (isNaN(startRank) || startRank < 2 || startRank > 15001);
+    (Number.isNaN(startRank) || startRank < 2 || startRank > 15001);
 
   return (
     <div className="container mx-auto min-h-screen p-4">

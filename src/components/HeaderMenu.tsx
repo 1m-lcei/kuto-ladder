@@ -3,6 +3,7 @@ import { GithubIcon, MenuIcon, XIcon } from "./SvgIcons";
 export function HeaderMenu() {
   return (
     <div className="dropdown dropdown-end">
+      {/* biome-ignore lint/a11y/useSemanticElements: DaisyUI dropdown implementation requires a div element */}
       <div tabIndex={0} role="button" className="btn btn-ghost btn-circle">
         <MenuIcon className="h-5 w-5" />
       </div>

@@ -4,9 +4,10 @@ import type { PathStrategy } from "../types/types";
 const cache = new Map<PathStrategy, Promise<number[]>>();
 
 export function fetchRankData(strategy: PathStrategy): Promise<number[]> {
-  if (!cache.has(strategy)) {
+  let promise = cache.get(strategy);
+  if (!promise) {
     const url = `${import.meta.env.BASE_URL}rank-data-${strategy}.json`;
-    const promise = fetch(url).then((res) => {
+    promise = fetch(url).then((res) => {
       if (!res.ok) {
         throw new Error(`HTTP error! status: ${res.status}`);
       }
@@ -14,5 +15,5 @@ export function fetchRankData(strategy: PathStrategy): Promise<number[]> {
     });
     cache.set(strategy, promise);
   }
-  return cache.get(strategy)!;
+  return promise;
 }
