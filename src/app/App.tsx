@@ -3,7 +3,6 @@ import {
   type ReactNode,
   Suspense,
   use,
-  useEffect,
   useId,
   useMemo,
   useState,
@@ -72,9 +71,6 @@ function App() {
   const id = useId();
   // ユーザーの直接の入力を文字列として保持
   const [inputValue, setInputValue] = useState<string>("");
-  // パス計算に使用する、検証済みのランク
-  const [startRank, setStartRank] = useState<number>(1);
-
   const [strategy, setStrategy] = useState<PathStrategy>("efficient");
 
   const systemPrefersDark = useSyncExternalStore(
@@ -90,13 +86,11 @@ function App() {
   // 入力値をデバウンス
   const debouncedInputValue = useDebounce(inputValue, 200);
 
-  // デバウンスされた入力値を検証し、startRankを更新
-  useEffect(() => {
-    const num = Number(debouncedInputValue);
-    if (num) {
-      setStartRank(num);
-    }
-  }, [debouncedInputValue]);
+  // デバウンスされた入力値からパス計算に使用するランクを派生させる
+  const startRank = Number(debouncedInputValue);
+  const isInvalidRank =
+    debouncedInputValue !== "" &&
+    (isNaN(startRank) || startRank < 2 || startRank > 15001);
 
   return (
     <div className="container mx-auto min-h-screen p-4">
@@ -164,16 +158,26 @@ function App() {
               </div>
             )}
           >
-            <Suspense
-              fallback={
-                <div className="text-center mt-12">
-                  <span className="loading loading-lg loading-spinner text-primary"></span>
-                  <p className="mt-4">ランクデータを読み込み中...</p>
-                </div>
-              }
-            >
-              <PathResult startRank={startRank} strategy={strategy} />
-            </Suspense>
+            {isInvalidRank ? (
+              <div
+                role="alert"
+                className="alert alert-warning mt-8 max-w-md mx-auto"
+              >
+                <ErrorIcon className="stroke-current shrink-0 h-6 w-6" />
+                <span>有効な開始ランク（2～15001）を入力してください。</span>
+              </div>
+            ) : (
+              <Suspense
+                fallback={
+                  <div className="text-center mt-12">
+                    <span className="loading loading-lg loading-spinner text-primary"></span>
+                    <p className="mt-4">ランクデータを読み込み中...</p>
+                  </div>
+                }
+              >
+                <PathResult startRank={startRank} strategy={strategy} />
+              </Suspense>
+            )}
           </ErrorBoundary>
         </main>
       </article>
