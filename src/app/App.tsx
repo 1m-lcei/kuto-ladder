@@ -130,15 +130,15 @@ function App() {
         <div className="card card-border card-md max-w-xl border-neutral-400 mx-auto">
           <div className="card-body">
             <form className="w-full max-w-4xl ">
-              <div className="flex flex-wrap gap-4 items-center">
-                <div className="flex items-center gap-2 grow">
+              <div className="flex gap-2 sm:gap-4 items-center">
+                <div className="flex items-center gap-2 grow min-w-0">
                   <label htmlFor={id} className="label-text whitespace-nowrap">
-                    開始ランク
+                    開始順位
                   </label>
                   <input
                     type="number"
                     id={id}
-                    className="input input-primary validator grow min-w-0"
+                    className="input input-primary validator grow min-w-0 w-full"
                     required
                     placeholder="2 ～ 15001"
                     min="2"
@@ -147,15 +147,26 @@ function App() {
                     onChange={(e) => setInputValue(e.target.value)}
                   />
                 </div>
-                <div className="form-control">
+                <div className="form-control shrink-0 hidden min-[360px]:block">
                   <select
-                    className="select select-bordered select-primary w-full sm:w-auto"
+                    className="select select-bordered select-primary w-auto"
                     value={strategy}
                     onChange={handleStrategyChange}
                   >
                     <option value="efficient">🏅 登頂</option>
                     <option value="target-second">🥈 2位狙い</option>
                     <option value="match-heavy">😈 最多対戦</option>
+                  </select>
+                </div>
+                <div className="form-control shrink-0 min-[360px]:hidden">
+                  <select
+                    className="select select-bordered select-primary w-auto"
+                    value={strategy}
+                    onChange={handleStrategyChange}
+                  >
+                    <option value="efficient">🏅</option>
+                    <option value="target-second">🥈</option>
+                    <option value="match-heavy">😈</option>
                   </select>
                 </div>
               </div>
