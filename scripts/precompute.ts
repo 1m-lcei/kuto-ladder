@@ -63,22 +63,24 @@ function precomputeRankData() {
 
   const __filename = fileURLToPath(import.meta.url);
   const __dirname = path.dirname(__filename);
-  const outputPath = path.resolve(__dirname, "../public/rank-data.json");
-  const data = {
-    dist,
-    steps,
-    distTo2,
-  };
+  const publicDir = path.resolve(__dirname, "../public");
 
   // publicディレクトリがなければ作成
-  const publicDir = path.dirname(outputPath);
   if (!fs.existsSync(publicDir)) {
     fs.mkdirSync(publicDir, { recursive: true });
   }
 
-  console.log(`Writing data to ${outputPath}...`);
-  fs.writeFileSync(outputPath, JSON.stringify(data));
-  console.log("Successfully wrote rank-data.json.");
+  const writeData = (filename: string, dataArray: number[]) => {
+    const outputPath = path.resolve(publicDir, filename);
+    console.log(`Writing data to ${outputPath}...`);
+    fs.writeFileSync(outputPath, JSON.stringify(dataArray));
+  };
+
+  writeData("rank-data-efficient.json", dist);
+  writeData("rank-data-match-heavy.json", steps);
+  writeData("rank-data-target-second.json", distTo2);
+
+  console.log("Successfully wrote all rank data files.");
 }
 
 precomputeRankData();

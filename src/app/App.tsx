@@ -1,9 +1,27 @@
-import { useEffect, useId, useMemo, useState } from "react";
+import { Component, type ReactNode, Suspense, use, useEffect, useId, useMemo, useState } from "react";
 import { RankPathVisualizer } from "../components/RankPathVisualizer";
 import { useDebounce } from "../hooks/useDebounce";
-import { useRankData } from "../hooks/useRankData";
+import { fetchRankData } from "../api/fetchRankData";
 import type { PathStep, PathStrategy } from "../types/types";
 import { calculatePath } from "../utils/rankCalculator";
+
+class ErrorBoundary extends Component<{ children: ReactNode, fallback: (error: Error) => ReactNode }, { error: Error | null }> {
+  constructor(props: { children: ReactNode, fallback: (error: Error) => ReactNode }) {
+    super(props);
+    this.state = { error: null };
+  }
+  static getDerivedStateFromError(error: Error) { return { error }; }
+  render() { return this.state.error ? this.props.fallback(this.state.error) : this.props.children; }
+}
+
+function PathResult({ startRank, strategy }: { startRank: number, strategy: PathStrategy }) {
+  const rankData = use(fetchRankData(strategy));
+  const path: PathStep[] = useMemo(() => {
+    return calculatePath(startRank, strategy, rankData);
+  }, [startRank, strategy, rankData]);
+
+  return <RankPathVisualizer path={path} targetRank={strategy === "target-second" ? 2 : 1} />;
+}
 
 function App() {
   const id = useId();
@@ -13,7 +31,6 @@ function App() {
   const [startRank, setStartRank] = useState<number>(1);
 
   const [strategy, setStrategy] = useState<PathStrategy>("efficient");
-  const { data: rankData, isLoading, error } = useRankData();
 
   // 入力値をデバウンス
   const debouncedInputValue = useDebounce(inputValue, 200);
@@ -25,12 +42,6 @@ function App() {
       setStartRank(num);
     }
   }, [debouncedInputValue]);
-
-  const path: PathStep[] = useMemo(() => {
-    if (!rankData) return [];
-    return calculatePath(startRank, strategy, rankData);
-  }, [startRank, strategy, rankData]);
-
 
   return (
     <div className="container mx-auto min-h-screen p-4">
@@ -79,35 +90,24 @@ function App() {
         </div>
 
         <main>
-          {isLoading && (
-            <div className="text-center mt-12">
-              <span className="loading loading-lg loading-spinner text-primary"></span>
-              <p className="mt-4">ランクデータを読み込み中...</p>
-            </div>
-          )}
-          {error && (
-            <div
-              role="alert"
-              className="alert alert-error mt-8 max-w-md mx-auto"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="stroke-current shrink-0 h-6 w-6"
-                fill="none"
-                viewBox="0 0 24 24"
-              >
+          <ErrorBoundary fallback={(err) => (
+            <div role="alert" className="alert alert-error mt-8 max-w-md mx-auto">
+              <svg xmlns="http://www.w3.org/2000/svg" className="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">
                 <title>エラーアイコン</title>
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
-                />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
-              <span>エラー: {error.message}</span>
+              <span>エラー: {err.message}</span>
             </div>
-          )}
-          {rankData && <RankPathVisualizer path={path} targetRank={strategy === "target-second" ? 2 : 1} />}
+          )}>
+            <Suspense fallback={
+              <div className="text-center mt-12">
+                <span className="loading loading-lg loading-spinner text-primary"></span>
+                <p className="mt-4">ランクデータを読み込み中...</p>
+              </div>
+            }>
+              <PathResult startRank={startRank} strategy={strategy} />
+            </Suspense>
+          </ErrorBoundary>
         </main>
       </article>
     </div>

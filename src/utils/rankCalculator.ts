@@ -1,4 +1,4 @@
-import type { PathStep, PathStrategy, RankData } from "../types/types";
+import type { PathStep, PathStrategy } from "../types/types";
 
 // この関数は事前計算スクリプトとクライアントサイドの両方で必要
 export function getNextRankRange(currentRank: number): [number, number] {
@@ -13,13 +13,13 @@ export function getNextRankRange(currentRank: number): [number, number] {
 export function calculatePath(
   startRank: number,
   strategy: PathStrategy,
-  rankData: RankData,
+  rankData: number[], // 戦略ごとの配列データを直接受け取る
 ): PathStep[] {
   if (
     !startRank ||
     !rankData ||
     startRank <= 1 ||
-    startRank >= rankData.dist.length
+    startRank >= rankData.length
   ) {
     return [];
   }
@@ -27,16 +27,7 @@ export function calculatePath(
   const path: PathStep[] = [];
   let currentRank = startRank;
 
-  let dataArray: number[];
-  let targetRank = 1;
-  if (strategy === "target-second") {
-    dataArray = rankData.distTo2;
-    targetRank = 2;
-  } else if (strategy === "efficient") {
-    dataArray = rankData.dist;
-  } else {
-    dataArray = rankData.steps;
-  }
+  const targetRank = strategy === "target-second" ? 2 : 1;
 
   while (true) {
     if (currentRank <= targetRank) break;
@@ -47,7 +38,7 @@ export function calculatePath(
     for (let nextRank = minNext; nextRank <= maxNext; nextRank++) {
       if (nextRank >= currentRank || nextRank < 1) continue;
 
-      if (dataArray[nextRank] === dataArray[currentRank] - 1) {
+      if (rankData[nextRank] === rankData[currentRank] - 1) {
         validNextRanks.push(nextRank);
       }
     }
