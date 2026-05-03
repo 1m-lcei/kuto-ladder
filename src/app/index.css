@@ -1,7 +1,7 @@
 @import "tailwindcss";
 /* Workaround: vite 8.0.11 以降で修正する。ref: https://github.com/vitejs/vite/issues/22323 */
 @plugin "daisyui/index.js" {
-    themes: emerald --default;
+    themes: emerald --default, night;
 }
 
 :root {
