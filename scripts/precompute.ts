@@ -18,9 +18,11 @@ function precomputeRankData() {
 
   const dist = new Array(MAX_RANK + 1).fill(Infinity);
   const steps = new Array(MAX_RANK + 1).fill(0);
+  const distTo2 = new Array(MAX_RANK + 1).fill(Infinity);
 
   dist[1] = 0;
   steps[1] = 0;
+  distTo2[2] = 0;
 
   for (let rank = 2; rank <= MAX_RANK; rank++) {
     if (rank % 1000 === 0) {
@@ -31,6 +33,7 @@ function precomputeRankData() {
 
     let minDistForCurrentRank = Infinity;
     let maxStepsForCurrentRank = 0;
+    let minDistTo2ForCurrentRank = Infinity;
 
     for (let nextRank = minNext; nextRank <= maxNext; nextRank++) {
       if (nextRank >= rank) continue;
@@ -41,10 +44,14 @@ function precomputeRankData() {
         maxStepsForCurrentRank,
         steps[nextRank],
       );
+      minDistTo2ForCurrentRank = Math.min(minDistTo2ForCurrentRank, distTo2[nextRank]);
     }
 
     if (minDistForCurrentRank !== Infinity) {
       dist[rank] = 1 + minDistForCurrentRank;
+    }
+    if (minDistTo2ForCurrentRank !== Infinity) {
+      distTo2[rank] = 1 + minDistTo2ForCurrentRank;
     }
     // ランク1に直接到達できる場合も考慮する
     if (maxStepsForCurrentRank !== 0 || minNext === 1) {
@@ -60,6 +67,7 @@ function precomputeRankData() {
   const data = {
     dist,
     steps,
+    distTo2,
   };
 
   // publicディレクトリがなければ作成

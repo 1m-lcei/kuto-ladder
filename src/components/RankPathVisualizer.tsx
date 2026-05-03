@@ -3,9 +3,10 @@ import { BaselineArrowForwardIos } from "./SvgIcons";
 
 interface RankPathVisualizerProps {
   path: PathStep[];
+  targetRank?: number;
 }
 
-export function RankPathVisualizer({ path }: RankPathVisualizerProps) {
+export function RankPathVisualizer({ path, targetRank = 1 }: RankPathVisualizerProps) {
   if (path.length === 0) {
     return null; // パスが空の場合は何も表示しない
   }
@@ -50,7 +51,7 @@ export function RankPathVisualizer({ path }: RankPathVisualizerProps) {
           }
         >
           <div className="ml-1 text-lg font-semibold text-right min-w-18">
-            1位
+            {targetRank}位
           </div>
         </li>
       </ul>

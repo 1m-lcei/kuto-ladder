@@ -27,10 +27,19 @@ export function calculatePath(
   const path: PathStep[] = [];
   let currentRank = startRank;
 
-  const dataArray = strategy === "efficient" ? rankData.dist : rankData.steps;
+  let dataArray: number[];
+  let targetRank = 1;
+  if (strategy === "target-second") {
+    dataArray = rankData.distTo2;
+    targetRank = 2;
+  } else if (strategy === "efficient") {
+    dataArray = rankData.dist;
+  } else {
+    dataArray = rankData.steps;
+  }
 
   while (true) {
-    if (currentRank <= 1) break;
+    if (currentRank <= targetRank) break;
 
     const [maxNext, minNext] = getNextRankRange(currentRank);
 
@@ -59,7 +68,7 @@ export function calculatePath(
     });
 
     const nextCurrentRank =
-      strategy === "efficient" ? minValidRank : maxValidRank;
+      (strategy === "efficient" || strategy === "target-second") ? minValidRank : maxValidRank;
 
     if (nextCurrentRank >= currentRank) {
       console.error(

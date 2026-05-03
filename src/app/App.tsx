@@ -31,9 +31,6 @@ function App() {
     return calculatePath(startRank, strategy, rankData);
   }, [startRank, strategy, rankData]);
 
-  const handleStrategyChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setStrategy(e.target.checked ? "match-heavy" : "efficient");
-  };
 
   return (
     <div className="container mx-auto min-h-screen p-4">
@@ -66,17 +63,15 @@ function App() {
                   />
                 </label>
                 <div className="form-control">
-                  <label className="swap text-xl">
-                    {/* this hidden checkbox controls the state */}
-                    <input
-                      type="checkbox"
-                      checked={strategy === "match-heavy"}
-                      onChange={handleStrategyChange}
-                    />
-
-                    <div className="swap-on">😈</div>
-                    <div className="swap-off">😇</div>
-                  </label>
+                  <select
+                    className="select select-bordered select-primary w-full max-w-xs"
+                    value={strategy}
+                    onChange={(e) => setStrategy(e.target.value as PathStrategy)}
+                  >
+                    <option value="efficient">🏅 登頂</option>
+                    <option value="target-second">🥈 2位狙い</option>
+                    <option value="match-heavy">😈 最多対戦</option>
+                  </select>
                 </div>
               </div>
             </form>
@@ -112,7 +107,7 @@ function App() {
               <span>エラー: {error.message}</span>
             </div>
           )}
-          {rankData && <RankPathVisualizer path={path} />}
+          {rankData && <RankPathVisualizer path={path} targetRank={strategy === "target-second" ? 2 : 1} />}
         </main>
       </article>
     </div>

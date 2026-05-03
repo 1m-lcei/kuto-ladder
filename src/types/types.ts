@@ -8,7 +8,8 @@ export interface PathStep {
 export interface RankData {
   dist: number[]; // 最短ステップ数
   steps: number[]; // 最長ステップ数
+  distTo2: number[]; // 2位到達の最短ステップ数
 }
 
 // パス計算の戦略
-export type PathStrategy = "efficient" | "match-heavy";
+export type PathStrategy = "efficient" | "match-heavy" | "target-second";
