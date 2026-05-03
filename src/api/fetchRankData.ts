@@ -5,7 +5,7 @@ const cache = new Map<PathStrategy, Promise<number[]>>();
 
 export function fetchRankData(strategy: PathStrategy): Promise<number[]> {
   if (!cache.has(strategy)) {
-    const url = `rank-data-${strategy}.json`;
+    const url = `${import.meta.env.BASE_URL}rank-data-${strategy}.json`;
     const promise = fetch(url).then((res) => {
       if (!res.ok) {
         throw new Error(`HTTP error! status: ${res.status}`);
