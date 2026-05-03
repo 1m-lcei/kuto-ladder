@@ -139,12 +139,12 @@ function App() {
           <div className="card-body">
             <form className="w-full max-w-4xl ">
               <div className="flex flex-wrap gap-4 items-center">
-                <label className="label">
-                  <span className="label-text">開始ランク</span>
+                <div className="flex items-center gap-2 grow">
+                  <label htmlFor={id} className="label-text whitespace-nowrap">開始ランク</label>
                   <input
                     type="number"
                     id={id}
-                    className="input input-primary validator min-w-16"
+                    className="input input-primary validator grow min-w-0"
                     required
                     placeholder="2 ～ 15001"
                     min="2"
@@ -152,10 +152,10 @@ function App() {
                     value={inputValue}
                     onChange={(e) => setInputValue(e.target.value)}
                   />
-                </label>
+                </div>
                 <div className="form-control">
                   <select
-                    className="select select-bordered select-primary w-full max-w-xs"
+                    className="select select-bordered select-primary w-full sm:w-auto"
                     value={strategy}
                     onChange={(e) =>
                       setStrategy(e.target.value as PathStrategy)
