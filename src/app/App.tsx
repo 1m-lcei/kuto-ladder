@@ -1,4 +1,4 @@
-import { Suspense, useId, useMemo, useState } from "react";
+import { Suspense, useId, useMemo, useState, useTransition } from "react";
 import { ErrorBoundary } from "../components/ErrorBoundary";
 import { HeaderMenu } from "../components/HeaderMenu";
 import { PathResult } from "../components/PathResult";
@@ -19,20 +19,22 @@ function App() {
     initConfig.strategy ?? "efficient",
   );
 
+  const [, startTransition] = useTransition();
+
   const { currentTheme, handleThemeChange } = useTheme(
     initConfig.theme ?? null,
   );
 
   const handleStrategyChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const newStrategy = e.target.value as PathStrategy;
-    setStrategy(newStrategy);
+    startTransition(() => {
+      setStrategy(newStrategy);
+    });
     saveConfig({ strategy: newStrategy });
   };
 
   // 入力値をデバウンス
   const debouncedInputValue = useDebounce(inputValue, 200);
-
-  // デバウンスされた入力値からパス計算に使用するランクを派生させる
   const startRank = Number(debouncedInputValue);
   const isInvalidRank =
     debouncedInputValue !== "" &&
@@ -120,18 +122,20 @@ function App() {
                 className="alert alert-warning mt-8 max-w-md mx-auto"
               >
                 <ErrorIcon className="stroke-current shrink-0 h-6 w-6" />
-                <span>有効な開始ランク（2～15001）を入力してください。</span>
+                <span>有効な開始順位（2～15001）を入力してください。</span>
               </div>
             ) : (
               <Suspense
                 fallback={
                   <div className="text-center mt-12">
                     <span className="loading loading-lg loading-spinner text-primary"></span>
-                    <p className="mt-4">ランクデータを読み込み中...</p>
+                    <p className="mt-4">順位データを読み込み中...</p>
                   </div>
                 }
               >
-                <PathResult startRank={startRank} strategy={strategy} />
+                <div>
+                  <PathResult startRank={startRank} strategy={strategy} />
+                </div>
               </Suspense>
             )}
           </ErrorBoundary>
