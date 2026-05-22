@@ -12,7 +12,7 @@ export function HeaderMenu() {
         className="menu dropdown-content bg-base-100 rounded-box z-1 w-40 p-2 shadow-sm"
       >
         <li>
-          <a href="https://x.com/1m_lcei" target="_blank" rel="noopener">
+          <a href="https://x.com/1m_lcei" target="_blank" rel="noopener noreferrer">
             <XIcon className="w-4 h-4 fill-current" />
             連絡先
           </a>
@@ -21,7 +21,7 @@ export function HeaderMenu() {
           <a
             href="https://github.com/1m-lcei/kuto-ladder"
             target="_blank"
-            rel="noopener"
+            rel="noopener noreferrer"
           >
             <GithubIcon className="w-4 h-4 fill-current" />
             Github
