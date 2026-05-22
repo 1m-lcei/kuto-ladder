@@ -15,6 +15,7 @@ export function ThemeController({
         value="night"
         checked={currentTheme === "night"}
         onChange={(e) => onChange(e.target.checked)}
+        aria-label="テーマの切り替え"
       />
       {/* sun icon */}
       <svg
