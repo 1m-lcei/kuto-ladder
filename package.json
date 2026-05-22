@@ -8,6 +8,7 @@
     "build": "tsc -b && vite build",
     "predeploy": "pnpm run build",
     "deploy": "gh-pages -d dist",
+    "precompute": "ts-node scripts/precompute.ts",
     "fix": "biome check --write .",
     "lint": "biome lint .",
     "preview": "vite preview"
