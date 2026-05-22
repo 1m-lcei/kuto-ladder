@@ -1,4 +1,4 @@
-import { useState, useSyncExternalStore } from "react";
+import { useEffect, useState, useSyncExternalStore } from "react";
 import { saveConfig } from "../utils/config";
 
 function subscribeTheme(callback: () => void) {
@@ -23,6 +23,10 @@ export function useTheme(initialTheme: "emerald" | "night" | null) {
   );
 
   const currentTheme = manualTheme ?? (systemPrefersDark ? "night" : "emerald");
+
+  useEffect(() => {
+    document.documentElement.setAttribute("data-theme", currentTheme);
+  }, [currentTheme]);
 
   const handleThemeChange = (checked: boolean) => {
     const newTheme = checked ? "night" : "emerald";
