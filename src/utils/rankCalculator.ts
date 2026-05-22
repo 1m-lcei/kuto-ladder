@@ -50,8 +50,8 @@ export function calculatePath(
       break;
     }
 
-    const minValidRank = Math.min(...validNextRanks);
-    const maxValidRank = Math.max(...validNextRanks);
+    const minValidRank = validNextRanks[0];
+    const maxValidRank = validNextRanks[validNextRanks.length - 1];
 
     path.push({
       currentRank,
