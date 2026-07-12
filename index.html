@@ -17,16 +17,16 @@
   <meta property="og:locale" content="ja_JP" />
   <script>
     try {
-      var conf = localStorage.getItem('kuto-ladder-config');
+      const conf = localStorage.getItem('kuto-ladder-config');
       if (conf) {
-        var parsed = JSON.parse(conf);
+        const parsed = JSON.parse(conf);
         if (parsed.version === 1 && parsed.theme) {
           document.documentElement.setAttribute('data-theme', parsed.theme);
-          var meta = document.querySelector('meta[name="color-scheme"]');
+          const meta = document.querySelector('meta[name="color-scheme"]');
           if (meta) meta.setAttribute('content', parsed.theme === 'night' ? 'dark' : 'light');
         }
       }
-    } catch (e) {}
+    } catch {}
   </script>
 </head>
 

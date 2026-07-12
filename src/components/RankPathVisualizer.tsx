@@ -32,7 +32,7 @@ export function RankPathVisualizer({
           return (
             <li
               data-content={index === 0 ? "📌" : `${index}`}
-              key={`${index}-${step.currentRank}`}
+              key={step.currentRank}
               className={getStepClass(index)}
             >
               <div className="flex items-baseline ml-1 text-left">
