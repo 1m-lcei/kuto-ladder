@@ -26,6 +26,12 @@ export function useTheme(initialTheme: "emerald" | "night" | null) {
 
   useEffect(() => {
     document.documentElement.setAttribute("data-theme", currentTheme);
+    const themeColor = currentTheme === "night" ? "#0f172a" : "#ffffff";
+    for (const meta of document.querySelectorAll<HTMLMetaElement>(
+      'meta[name="theme-color"]',
+    )) {
+      meta.content = themeColor;
+    }
   }, [currentTheme]);
 
   const handleThemeChange = (checked: boolean) => {

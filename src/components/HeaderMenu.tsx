@@ -2,14 +2,19 @@ import { GithubIcon, MenuIcon, XIcon } from "./SvgIcons";
 
 export function HeaderMenu() {
   return (
-    <div className="dropdown dropdown-end">
-      {/* biome-ignore lint/a11y/useSemanticElements: DaisyUI dropdown implementation requires a div element */}
-      <div tabIndex={0} role="button" className="btn btn-ghost btn-circle">
+    <>
+      <button
+        type="button"
+        className="btn btn-ghost btn-circle header-menu-trigger"
+        popoverTarget="header-menu"
+        aria-label="メニュー"
+      >
         <MenuIcon className="h-5 w-5" />
-      </div>
+      </button>
       <ul
-        tabIndex={-1}
-        className="menu dropdown-content bg-base-100 rounded-box z-1 w-40 p-2 shadow-sm"
+        id="header-menu"
+        popover="auto"
+        className="dropdown dropdown-end menu w-40 rounded-box bg-base-100 p-2 shadow-sm"
       >
         <li>
           <a href="https://x.com/1m_lcei" target="_blank" rel="noopener noreferrer">
@@ -28,6 +33,6 @@ export function HeaderMenu() {
           </a>
         </li>
       </ul>
-    </div>
+    </>
   );
 }

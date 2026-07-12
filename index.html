@@ -5,6 +5,9 @@
   <meta charset="UTF-8" />
   <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="color-scheme" content="light dark" />
+  <meta name="theme-color" media="(prefers-color-scheme: light)" content="#ffffff" />
+  <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#0f172a" />
   <title>戦術対抗戦 経路</title>
   <meta name="description" content="戦術対抗戦 (PvP) の順位経路を計算・表示するWebアプリケーションです。" />
   <meta property="og:title" content="戦術対抗戦 経路" />
@@ -19,6 +22,8 @@
         var parsed = JSON.parse(conf);
         if (parsed.version === 1 && parsed.theme) {
           document.documentElement.setAttribute('data-theme', parsed.theme);
+          var meta = document.querySelector('meta[name="color-scheme"]');
+          if (meta) meta.setAttribute('content', parsed.theme === 'night' ? 'dark' : 'light');
         }
       }
     } catch (e) {}

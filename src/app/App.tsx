@@ -9,6 +9,16 @@ import { useTheme } from "../hooks/useTheme";
 import type { PathStrategy } from "../types/types";
 import { loadConfig, saveConfig } from "../utils/config";
 
+const STRATEGY_OPTIONS = [
+  { value: "efficient", emoji: "🏅", label: "登頂" },
+  { value: "target-second", emoji: "🥈", label: "2位狙い" },
+  { value: "match-heavy", emoji: "😈", label: "最多対戦" },
+] as const satisfies ReadonlyArray<{
+  value: PathStrategy;
+  emoji: string;
+  label: string;
+}>;
+
 function App() {
   const id = useId();
   const initConfig = useMemo(() => loadConfig(), []);
@@ -59,7 +69,7 @@ function App() {
 
         <div className="card card-border card-md max-w-xl border-neutral-400 mx-auto">
           <div className="card-body">
-            <form className="w-full max-w-4xl ">
+            <form className="w-full max-w-4xl" onSubmit={(e) => e.preventDefault()}>
               <div className="flex gap-2 sm:gap-4 items-center">
                 <div className="flex items-center gap-2 grow min-w-0">
                   <label htmlFor={id} className="label-text whitespace-nowrap">
@@ -75,6 +85,8 @@ function App() {
                     max="15001"
                     value={inputValue}
                     onChange={(e) => setInputValue(e.target.value)}
+                    aria-invalid={isInvalidRank || undefined}
+                    aria-describedby={isInvalidRank ? "rank-error" : undefined}
                   />
                 </div>
                 <div className="form-control shrink-0 hidden min-[360px]:block">
@@ -82,10 +94,13 @@ function App() {
                     className="select select-bordered select-primary w-auto"
                     value={strategy}
                     onChange={handleStrategyChange}
+                    aria-label="経路戦略"
                   >
-                    <option value="efficient">🏅 登頂</option>
-                    <option value="target-second">🥈 2位狙い</option>
-                    <option value="match-heavy">😈 最多対戦</option>
+                    {STRATEGY_OPTIONS.map((opt) => (
+                      <option key={opt.value} value={opt.value}>
+                        {opt.emoji} {opt.label}
+                      </option>
+                    ))}
                   </select>
                 </div>
                 <div className="form-control shrink-0 min-[360px]:hidden">
@@ -93,10 +108,13 @@ function App() {
                     className="select select-bordered select-primary w-auto"
                     value={strategy}
                     onChange={handleStrategyChange}
+                    aria-label="経路戦略"
                   >
-                    <option value="efficient">🏅</option>
-                    <option value="target-second">🥈</option>
-                    <option value="match-heavy">😈</option>
+                    {STRATEGY_OPTIONS.map((opt) => (
+                      <option key={opt.value} value={opt.value}>
+                        {opt.emoji}
+                      </option>
+                    ))}
                   </select>
                 </div>
               </div>
@@ -118,6 +136,7 @@ function App() {
           >
             {isInvalidRank ? (
               <div
+                id="rank-error"
                 role="alert"
                 className="alert alert-warning mt-8 max-w-md mx-auto"
               >
