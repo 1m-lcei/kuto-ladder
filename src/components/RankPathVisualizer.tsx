@@ -40,17 +40,18 @@ export function RankPathVisualizer({
                   {step.currentRank}位
                 </span>
                 <div className="flex items-baseline ml-1 text-neutral-400">
-                  (<BaselineArrowForwardIos className="w-3 h-3 mx-1" aria-hidden="true" />
+                  (
+                  <BaselineArrowForwardIos
+                    className="w-3 h-3 mx-1"
+                    aria-hidden="true"
+                  />
                   {max === min ? `${max}位` : `${min}位 〜 ${max}位`})
                 </div>
               </div>
             </li>
           );
         })}
-        <li
-          data-content={path.length}
-          className={getStepClass(path.length)}
-        >
+        <li data-content={path.length} className={getStepClass(path.length)}>
           <div className="ml-1 text-lg font-semibold text-right min-w-18">
             {targetRank}位
           </div>

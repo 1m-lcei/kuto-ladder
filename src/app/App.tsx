@@ -69,7 +69,10 @@ function App() {
 
         <div className="card card-border card-md max-w-xl border-neutral-400 mx-auto">
           <div className="card-body">
-            <form className="w-full max-w-4xl" onSubmit={(e) => e.preventDefault()}>
+            <form
+              className="w-full max-w-4xl"
+              onSubmit={(e) => e.preventDefault()}
+            >
               <div className="flex gap-2 sm:gap-4 items-center">
                 <div className="flex items-center gap-2 grow min-w-0">
                   <label htmlFor={id} className="label-text whitespace-nowrap">

@@ -17,7 +17,11 @@ export function HeaderMenu() {
         className="dropdown dropdown-end menu w-40 rounded-box bg-base-100 p-2 shadow-sm"
       >
         <li>
-          <a href="https://x.com/1m_lcei" target="_blank" rel="noopener noreferrer">
+          <a
+            href="https://x.com/1m_lcei"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
             <XIcon className="w-4 h-4 fill-current" />
             連絡先
           </a>
