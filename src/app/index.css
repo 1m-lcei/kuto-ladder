@@ -1,4 +1,6 @@
 @import "tailwindcss";
+@source not "../../AGENTS.md";
+
 @plugin "daisyui" {
   themes:
     emerald --default,
