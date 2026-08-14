@@ -79,15 +79,17 @@ function App() {
                     開始順位
                   </label>
                   <input
-                    type="number"
+                    type="text"
+                    inputMode="numeric"
                     id={id}
                     className="input input-primary validator grow min-w-0 w-full"
                     required
                     placeholder="2 ～ 15001"
-                    min="2"
-                    max="15001"
+                    pattern="[0-9]*"
                     value={inputValue}
-                    onChange={(e) => setInputValue(e.target.value)}
+                    onChange={(e) =>
+                      setInputValue(e.target.value.normalize("NFKC"))
+                    }
                     aria-invalid={isInvalidRank || undefined}
                     aria-describedby={isInvalidRank ? "rank-error" : undefined}
                   />
