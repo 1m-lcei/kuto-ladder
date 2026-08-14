@@ -65,18 +65,17 @@ Bun manages Vite 8 + TypeScript 7; GitHub Pages serves the Tailwind/daisyUI buil
 - Project TypeScript stays strict at 7.x with `import type`, narrow unions, and no emitted TS.
 - Biome owns lint/format/imports: two spaces, double quotes, semicolons. It excludes
   `public/`, `dist/`, and `node_modules/`.
-- Tailwind explicitly excludes root `AGENTS.md` from source scanning in `index.css`.
+- Tailwind excludes root `AGENTS.md` and `.omo` tool artifacts from source scanning in `index.css`.
 - User-facing text is Japanese; UI uses functional React and Tailwind/daisyUI.
 - Persist settings through `saveConfig`; storage key is `kuto-ladder-config` and
   the schema is gated by `CONFIG_VERSION`.
 
 ## PROJECT-SPECIFIC GUARDRAILS
 
-- Keep the rank field as text: `type="number"` rejects full-width digits before the
-  app can normalize them. Preserve boundary NFKC normalization, `inputMode="numeric"`,
-  and `pattern="[0-9]*"`.
+- Keep the rank field as text and preserve its raw controlled value during IME composition.
+  NFKC-normalize only the debounced parse value; keep `inputMode="numeric"` and `pattern="[0-9０-９]*"`.
 - Do not hard-code `/rank-data-...`; use `import.meta.env.BASE_URL` or Pages breaks.
-- Preserve the `@source not "../../AGENTS.md"` rule; otherwise this guide bloats CSS.
+- Preserve the `@source not` rules for `AGENTS.md` and `.omo`; otherwise tool docs/artifacts bloat CSS.
 - Do not change only one copy of rank-range logic; client and precompute divergence
   produces paths inconsistent with the generated arrays.
 - Do not claim automated tests pass: the repository currently contains no tests,

@@ -45,9 +45,10 @@ function App() {
 
   // 入力値をデバウンス
   const debouncedInputValue = useDebounce(inputValue, 200);
-  const startRank = Number(debouncedInputValue);
+  const normalizedInputValue = debouncedInputValue.normalize("NFKC");
+  const startRank = Number(normalizedInputValue);
   const isInvalidRank =
-    debouncedInputValue !== "" &&
+    normalizedInputValue !== "" &&
     (Number.isNaN(startRank) || startRank < 2 || startRank > 15001);
 
   return (
@@ -85,11 +86,9 @@ function App() {
                     className="input input-primary validator grow min-w-0 w-full"
                     required
                     placeholder="2 ～ 15001"
-                    pattern="[0-9]*"
+                    pattern="[0-9０-９]*"
                     value={inputValue}
-                    onChange={(e) =>
-                      setInputValue(e.target.value.normalize("NFKC"))
-                    }
+                    onChange={(e) => setInputValue(e.target.value)}
                     aria-invalid={isInvalidRank || undefined}
                     aria-describedby={isInvalidRank ? "rank-error" : undefined}
                   />
