@@ -12,6 +12,9 @@ dist
 dist-ssr
 *.local
 
+# Agent and tool artifacts
+.omo/
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
