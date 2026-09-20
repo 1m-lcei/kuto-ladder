@@ -14,8 +14,20 @@ export function loadConfig(): AppConfig {
     const data = localStorage.getItem(CONFIG_KEY);
     if (data) {
       const parsed = JSON.parse(data);
-      if (parsed.version === CONFIG_VERSION) {
-        return parsed;
+      if (parsed?.version === CONFIG_VERSION) {
+        return {
+          version: CONFIG_VERSION,
+          theme:
+            parsed.theme === "emerald" || parsed.theme === "night"
+              ? parsed.theme
+              : undefined,
+          strategy:
+            parsed.strategy === "efficient" ||
+            parsed.strategy === "match-heavy" ||
+            parsed.strategy === "target-second"
+              ? parsed.strategy
+              : undefined,
+        };
       }
     }
   } catch (e) {

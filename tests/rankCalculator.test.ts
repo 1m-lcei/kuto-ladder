@@ -3,8 +3,10 @@ import { generateBoundaries } from "../scripts/precompute";
 import boundaries from "../src/generated/rank-boundaries.json";
 import { calculatePath } from "../src/utils/rankCalculator";
 import { getNextRankRange } from "../src/utils/rankRules";
-import { getNextRankRange as referenceRange } from "./reference/rankCalculator";
-import { calculatePath as referencePath } from "./reference/rankCalculator";
+import {
+  calculatePath as referencePath,
+  getNextRankRange as referenceRange,
+} from "./reference/rankCalculator";
 import { referenceData } from "./reference/rankData";
 
 const data = referenceData();
@@ -20,9 +22,13 @@ for (const strategy of ["efficient", "target-second", "match-heavy"] as const) {
 
 test("generated data is reproducible and every boundary encodes the old cost", () => {
   expect(generateBoundaries()).toEqual(boundaries);
-  expect(Object.values(boundaries).map((values) => values.length)).toEqual([24, 139, 24]);
+  expect(Object.values(boundaries).map((values) => values.length)).toEqual([
+    24, 139, 24,
+  ]);
   expect(JSON.stringify(boundaries).length).toBe(795);
-  for (const strategy of Object.keys(boundaries) as (keyof typeof boundaries)[]) {
+  for (const strategy of Object.keys(
+    boundaries,
+  ) as (keyof typeof boundaries)[]) {
     for (const [cost, rank] of boundaries[strategy].entries()) {
       expect(data[strategy][rank]).toBe(cost);
       if (cost > 0) expect(data[strategy][rank - 1]).toBe(cost - 1);

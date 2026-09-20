@@ -74,4 +74,3 @@ export function calculatePath(
 
   return path;
 }
-

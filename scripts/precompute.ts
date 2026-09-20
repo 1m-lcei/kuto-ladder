@@ -3,7 +3,11 @@ import type { PathStrategy } from "../src/types/types";
 import { getNextRankRange, MAX_RANK } from "../src/utils/rankRules";
 
 export function generateBoundaries(): Record<PathStrategy, number[]> {
-  const boundaries = { efficient: [1], "match-heavy": [1], "target-second": [2] };
+  const boundaries = {
+    efficient: [1],
+    "match-heavy": [1],
+    "target-second": [2],
+  };
   for (const strategy of Object.keys(boundaries) as PathStrategy[]) {
     const target = boundaries[strategy][0];
     const costs = new Uint8Array(MAX_RANK + 1);
@@ -21,5 +25,8 @@ export function generateBoundaries(): Record<PathStrategy, number[]> {
 if (import.meta.main) {
   const directory = new URL("../src/generated/", import.meta.url);
   mkdirSync(directory, { recursive: true });
-  writeFileSync(new URL("rank-boundaries.json", directory), JSON.stringify(generateBoundaries()));
+  writeFileSync(
+    new URL("rank-boundaries.json", directory),
+    JSON.stringify(generateBoundaries()),
+  );
 }

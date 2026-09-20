@@ -7,14 +7,21 @@
   },
   "files": {
     "ignoreUnknown": false,
-    "includes": ["**", "!dist", "!node_modules", "!public", "!.omo", "!.codegraph"]
+    "includes": [
+      "**",
+      "!dist",
+      "!node_modules",
+      "!public",
+      "!.omo",
+      "!.codegraph",
+      "!src/generated"
+    ]
   },
   "formatter": {
     "enabled": true,
     "indentStyle": "space",
     "indentWidth": 2
   },
-
   "linter": {
     "enabled": true,
     "rules": {
@@ -31,11 +38,6 @@
     "formatter": {
       "quoteStyle": "double",
       "semicolons": "always"
-    }
-  },
-  "css": {
-    "parser": {
-      "tailwindDirectives": true
     }
   },
   "assist": {
