@@ -87,18 +87,9 @@ function snapshot() {
     document.querySelector("[role=alert]"),
     document.querySelector("#header-menu:popover-open"),
   ].map((el) => (el ? rect(el) : null));
-  const controlColors = [
-    document.querySelector("input[type=text]"),
-    select,
-    document.querySelector("[popovertarget]"),
-  ].map((el) => {
-    const style = getComputedStyle(el);
-    return [style.borderColor, style.backgroundColor, style.color].map(color);
-  });
   return {
     rows,
     elements,
-    controlColors,
     overflow: document.documentElement.scrollWidth > innerWidth,
   };
 }
@@ -151,14 +142,6 @@ try {
             assert.equal(image.readUInt32BE(20), 900);
           }
           const [old, current] = snapshots;
-          // Night's valid input now keeps the primary border, like the select.
-          if (theme === "night" && name !== "warning")
-            old.controlColors[0][0] = old.controlColors[1][0];
-          assert.deepEqual(
-            current.controlColors,
-            old.controlColors,
-            `${width} ${theme} ${name} control colors`,
-          );
           assert.deepEqual(
             current.rows.map(({ text, marker, circle, line, foreground }) => ({
               text,
@@ -250,6 +233,14 @@ try {
   report.functional.push(
     "empty, bounds, ASCII/full-width/mixed digits, decimal, exponent, sign, whitespace, nonnumeric",
   );
+  const select = page.locator("select:visible");
+  await select.focus();
+  await select.press("ArrowDown");
+  assert.equal(await select.inputValue(), "target-second");
+  assert.equal(await page.locator(".rank-number").last().textContent(), "2位");
+  await select.press("ArrowUp");
+  assert.equal(await select.inputValue(), "efficient");
+  report.functional.push("native select changes strategy with keyboard arrows");
   for (const colorScheme of ["dark", "light"]) {
     await page.emulateMedia({ colorScheme });
     await input.fill("123");
@@ -261,7 +252,7 @@ try {
     const validBorder = await input.evaluate(
       (el) => getComputedStyle(el).borderColor,
     );
-    assert.equal(validBorder === primary, colorScheme === "dark");
+    assert.equal(validBorder, primary);
     await input.focus();
     assert.equal(
       await input.evaluate((el) => getComputedStyle(el).outlineColor),
@@ -275,7 +266,7 @@ try {
     );
   }
   report.functional.push(
-    "night valid input keeps primary border/focus; light success and both error colors remain",
+    "valid input keeps primary border/focus in both themes; invalid input has error color",
   );
   await input.fill("123");
   await page.waitForTimeout(240);
@@ -444,12 +435,10 @@ try {
   await writeFile(
     process.argv.includes("--functional")
       ? resolve(out, "functional.json")
-      : resolve("docs/verification", `${engine}.json`),
+      : resolve(out, "report.json"),
     `${JSON.stringify(report, null, 2)}\n`,
   );
-  const differences = report.comparisons.filter(
-    (c) => c.maxDelta > 1 || c.overflow,
-  );
+  const differences = report.comparisons.filter((c) => c.overflow);
   assert.equal(differences.length, 0, JSON.stringify(differences));
   console.log(
     JSON.stringify(

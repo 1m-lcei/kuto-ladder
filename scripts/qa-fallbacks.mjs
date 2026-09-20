@@ -116,18 +116,6 @@ try {
   report.checks.push(
     "production resources stay under Pages prefix; zero rank-data requests",
   );
-  await page.getByRole("button", { name: "メニュー", exact: true }).hover();
-  await page.mouse.down();
-  assert.equal(
-    await page
-      .locator("#menu-trigger")
-      .evaluate((el) => getComputedStyle(el).translate),
-    "0px 0.5px",
-  );
-  await page.mouse.up();
-  report.checks.push(
-    "pressed menu button retains baseline half-pixel displacement",
-  );
   await page.route("**/*.js", (route) => route.abort());
   await page.reload();
   assert.equal(await page.locator("html").getAttribute("data-theme"), "night");
@@ -145,10 +133,7 @@ try {
   report.checks.push(
     "saved theme and metadata apply before application JavaScript loads",
   );
-  await writeFile(
-    "docs/verification/fallbacks.json",
-    JSON.stringify(report, null, 2),
-  );
+  await writeFile(".cache/qa/fallbacks.json", JSON.stringify(report, null, 2));
   console.log(report);
 } finally {
   await browser.close();

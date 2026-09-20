@@ -57,7 +57,7 @@ TypeScript; Bun, Vite, TypeScript 7 and Biome. No runtime dependencies.
 - At <360px strategy labels are emoji-only; at >=360px include Japanese labels.
 - Themes: emerald/night. System preference applies until a manual preference is
   saved. Keep early theme initialization and theme-color metadata synchronized.
-  Night's valid input keeps the primary border/focus color; invalid input is red.
+  Valid input keeps the primary border/focus color in both themes; invalid input is red.
 - Storage key `kuto-ladder-config`, CONFIG_VERSION=1; product version does not
   reset settings. Validate stored theme/strategy; unavailable storage is nonfatal.
 - All deployed assets resolve under `/kuto-ladder/`. No rank-data fetches.
@@ -89,8 +89,11 @@ tsconfig files are JSONC, not strict JSON.
 
 Build + Bun tests + browser checks are required for behavior changes.
 Run the commands in docs/verification.
-Compare the baseline and new production builds on their Pages mounts. Validate
-DOM before screenshots, PNG signatures/dimensions, and inspect comparison sheets.
+Compare production builds on their Pages mounts. Preserve vertical path content,
+order and colors; exact old control styling and pixel positions are no longer
+requirements after the CSS simplification. Use native select rendering, a fluid
+page width and static theme icons instead of recreating framework decoration.
+Validate DOM before screenshots, PNG signatures/dimensions, and inspect images.
 Keep browser temp profiles under `.cache/qa/tmp`; Playwright cleans them on close.
 Do not confuse Windows WebKit with Safari or a viewport with a mobile device.
 Synthetic composition events cover application handling, not native IME behavior.
