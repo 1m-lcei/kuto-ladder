@@ -3,8 +3,8 @@ import { mkdir, writeFile } from "node:fs/promises";
 import { resolve } from "node:path";
 import { chromium } from "playwright";
 
-await mkdir(".omo/qa/tmp", { recursive: true });
-process.env.TEMP = process.env.TMP = resolve(".omo/qa/tmp");
+await mkdir(".cache/qa/tmp", { recursive: true });
+process.env.TEMP = process.env.TMP = resolve(".cache/qa/tmp");
 const browser = await chromium.launch({ channel: "msedge", headless: true });
 const report = { browser: browser.version(), checks: [] };
 try {

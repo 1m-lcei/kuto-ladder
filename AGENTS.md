@@ -57,6 +57,7 @@ TypeScript; Bun, Vite, TypeScript 7 and Biome. No runtime dependencies.
 - At <360px strategy labels are emoji-only; at >=360px include Japanese labels.
 - Themes: emerald/night. System preference applies until a manual preference is
   saved. Keep early theme initialization and theme-color metadata synchronized.
+  Night's valid input keeps the primary border/focus color; invalid input is red.
 - Storage key `kuto-ladder-config`, CONFIG_VERSION=1; product version does not
   reset settings. Validate stored theme/strategy; unavailable storage is nonfatal.
 - All deployed assets resolve under `/kuto-ladder/`. No rank-data fetches.
@@ -67,30 +68,30 @@ TypeScript; Bun, Vite, TypeScript 7 and Biome. No runtime dependencies.
 
 ```sh
 bun install --frozen-lockfile
-bun run dev          # precompute + Vite
+bun run dev          # Vite
 bun run precompute   # updates tracked src/generated/rank-boundaries.json
 bun run lint
 bun run fix
 bun test             # includes all 45,000 old/new path comparisons
-bun run build        # precompute, strict TypeScript, Vite
+bun run build        # strict TypeScript, Vite
 bun run preview      # actual /kuto-ladder/ mount on port 4173
 bun run deploy       # build and publish gh-pages; explicit deployment task only
 ```
 
+dev/build use the tracked data; run precompute only when rank rules change.
 Use Bun and preserve bun.lock; do not introduce other package-manager lockfiles.
 Do not mix unrelated dependency updates. Playwright is a dev-only QA dependency.
 Biome owns formatting/imports (two spaces, double quotes, semicolons). Generated
 JSON is excluded from formatting so it stays compact. Tool artifacts are excluded.
-The old Tailwind `@source not` rules no longer apply: Tailwind has been removed.
 tsconfig files are JSONC, not strict JSON.
 
 ## QA
 
-Build + Bun tests + browser checks are required for behavior changes. The former
-"no tests" baseline no longer applies. Run the commands in docs/verification.
+Build + Bun tests + browser checks are required for behavior changes.
+Run the commands in docs/verification.
 Compare the baseline and new production builds on their Pages mounts. Validate
 DOM before screenshots, PNG signatures/dimensions, and inspect comparison sheets.
-Keep browser temp profiles under `.omo/qa/tmp`; Playwright cleans them on close.
+Keep browser temp profiles under `.cache/qa/tmp`; Playwright cleans them on close.
 Do not confuse Windows WebKit with Safari or a viewport with a mobile device.
 Synthetic composition events cover application handling, not native IME behavior.
 Report unavailable coverage honestly; the user approved testing available systems.

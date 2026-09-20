@@ -1,6 +1,7 @@
 # 2.0 検証記録
 
-比較基準: `8e4ad79`。作業ブランチ: `feat/2.0-standard-first`。
+比較基準: `8e4ad79`。移行完了時の検証対象: `54467c3`。
+作業ブランチ: `feat/2.0-standard-first`。
 Windows上で、同一ブラウザー・同一フォント・deviceScaleFactor=1の旧新版を比較。
 mainへの統合、push、Pagesへの公開は行っていません。
 
@@ -95,16 +96,16 @@ WebKitでは1画像あたり最大2でした（ラスタライズの微差）。
 新しいチェックアウトから基準版を用意する場合:
 
 ```powershell
-git worktree add --detach .omo/baseline 8e4ad79
-bun install --cwd .omo/baseline --frozen-lockfile
-bun run --cwd .omo/baseline build
+git worktree add --detach .cache/baseline 8e4ad79
+bun install --cwd .cache/baseline --frozen-lockfile
+bun run --cwd .cache/baseline build
 bun run build
 ```
 
 別ターミナルで各サーバーを起動します:
 
 ```powershell
-bun scripts/qa-server.ts .omo/baseline/dist 4174
+bun scripts/qa-server.ts .cache/baseline/dist 4174
 bun run preview
 ```
 
@@ -112,7 +113,7 @@ bun run preview
 Playwrightのブラウザーもワークスペース内に配置します:
 
 ```powershell
-$env:PLAYWRIGHT_BROWSERS_PATH = "$PWD/.omo/browsers"
+$env:PLAYWRIGHT_BROWSERS_PATH = "$PWD/.cache/browsers"
 bun run playwright install chromium firefox webkit
 node scripts/qa-browser.mjs msedge
 node scripts/qa-browser.mjs firefox
@@ -124,7 +125,22 @@ uv run --with pillow python scripts/qa-images.py
 ```
 
 性能計測時は他のブラウザー検証を同時実行しません。
-`--functional` は操作だけを再実行します。PNG原本は `.omo/qa/<browser>/`、
-ブラウザープロファイルは `.omo/qa/tmp/` に作成し、終了時にPlaywrightで削除します。
-一時的なプロセスのPID/パスはローカルの `.omo/qa/browser-processes.json` に記録しました。
-ブラウザー配布物と基準版はローカルの再検証用に残しています。
+`--functional` は操作だけを再実行します。PNG原本は `.cache/qa/<browser>/`、
+ブラウザープロファイルは `.cache/qa/tmp/` に作成し、終了時にPlaywrightで削除します。
+基準版・ブラウザー配布物・PNG原本などの一時データは検証完了後に削除済みです。
+再検証時には上記手順で用意します。`--functional` は新版のサーバーだけで実行できます。
+操作だけの実行結果は `.cache/qa/<browser>/functional.json` に出力し、
+既存の比較記録は上書きしません。
+
+## 移行後の調整
+
+ダークテーマでは、有効な入力後も枠線・フォーカス色を主色の青に保ちます。
+旧版の緑への変化はdaisyUIの成功色を引き継いだものでした。
+ライトテーマの成功色と、不正入力のエラー色は維持しています。
+比較スクリプトはこの意図的な差を考慮します。上記画像・性能値は調整前の記録です。
+
+dev/buildから自動生成を外し、順位ルール変更時だけ `bun run precompute` を実行します。
+
+調整後にlint・Bun全6テスト（60,592 assertions）・本番ビルドを再実行し、合格。
+Windows Edge 153.0.4234.48の本番Pagesマウントで操作テスト全10項目も合格しました。
+入力後・再フォーカス時の両テーマの枠色、不正入力時のエラー色を含みます。

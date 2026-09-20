@@ -2,9 +2,9 @@ import assert from "node:assert/strict";
 import { mkdir, writeFile } from "node:fs/promises";
 import { resolve } from "node:path";
 
-process.env.PLAYWRIGHT_BROWSERS_PATH ??= resolve(".omo/browsers");
-await mkdir(resolve(".omo/qa/tmp"), { recursive: true });
-process.env.TEMP = process.env.TMP = resolve(".omo/qa/tmp");
+process.env.PLAYWRIGHT_BROWSERS_PATH ??= resolve(".cache/browsers");
+await mkdir(resolve(".cache/qa/tmp"), { recursive: true });
+process.env.TEMP = process.env.TMP = resolve(".cache/qa/tmp");
 const { chromium, firefox, webkit } = await import("playwright");
 const engine = process.argv[2] ?? "msedge";
 const browser = await (engine === "firefox"
@@ -16,7 +16,7 @@ const browser = await (engine === "firefox"
   ...(engine === "msedge" ? { channel: "msedge" } : {}),
   headless: true,
 });
-const out = resolve(".omo/qa", engine);
+const out = resolve(".cache/qa", engine);
 await mkdir(out, { recursive: true });
 const report = {
   browser: engine,
@@ -26,17 +26,19 @@ const report = {
   functional: [],
 };
 const pages = await Promise.all(
-  [4174, 4173].map(async (port) => {
-    const context = await browser.newContext({
-      viewport: { width: 375, height: 900 },
-      deviceScaleFactor: 1,
-      colorScheme: "light",
-    });
-    const page = await context.newPage();
-    await page.goto(`http://localhost:${port}/kuto-ladder/`);
-    await page.locator("h1").waitFor();
-    return page;
-  }),
+  (process.argv.includes("--functional") ? [4173] : [4174, 4173]).map(
+    async (port) => {
+      const context = await browser.newContext({
+        viewport: { width: 375, height: 900 },
+        deviceScaleFactor: 1,
+        colorScheme: "light",
+      });
+      const page = await context.newPage();
+      await page.goto(`http://localhost:${port}/kuto-ladder/`);
+      await page.locator("h1").waitFor();
+      return page;
+    },
+  ),
 );
 const cases = [
   ["short", "2", "efficient"],
@@ -149,6 +151,9 @@ try {
             assert.equal(image.readUInt32BE(20), 900);
           }
           const [old, current] = snapshots;
+          // Night's valid input now keeps the primary border, like the select.
+          if (theme === "night" && name !== "warning")
+            old.controlColors[0][0] = old.controlColors[1][0];
           assert.deepEqual(
             current.controlColors,
             old.controlColors,
@@ -207,7 +212,7 @@ try {
       resolve(out, "visual.json"),
       JSON.stringify(report, null, 2),
     );
-  const page = pages[1];
+  const page = pages.at(-1);
   await page.setViewportSize({ width: 375, height: 900 });
   await page.evaluate(() => localStorage.clear());
   await page.reload();
@@ -244,6 +249,33 @@ try {
   }
   report.functional.push(
     "empty, bounds, ASCII/full-width/mixed digits, decimal, exponent, sign, whitespace, nonnumeric",
+  );
+  for (const colorScheme of ["dark", "light"]) {
+    await page.emulateMedia({ colorScheme });
+    await input.fill("123");
+    await page.waitForTimeout(240);
+    await input.blur();
+    const primary = await page
+      .locator("select:visible")
+      .evaluate((el) => getComputedStyle(el).borderColor);
+    const validBorder = await input.evaluate(
+      (el) => getComputedStyle(el).borderColor,
+    );
+    assert.equal(validBorder === primary, colorScheme === "dark");
+    await input.focus();
+    assert.equal(
+      await input.evaluate((el) => getComputedStyle(el).outlineColor),
+      validBorder,
+    );
+    await input.fill("1");
+    await page.waitForTimeout(240);
+    assert.notEqual(
+      await input.evaluate((el) => getComputedStyle(el).borderColor),
+      validBorder,
+    );
+  }
+  report.functional.push(
+    "night valid input keeps primary border/focus; light success and both error colors remain",
   );
   await input.fill("123");
   await page.waitForTimeout(240);
@@ -410,7 +442,9 @@ try {
   );
   report.functional.push("no rank-data requests");
   await writeFile(
-    resolve("docs/verification", `${engine}.json`),
+    process.argv.includes("--functional")
+      ? resolve(out, "functional.json")
+      : resolve("docs/verification", `${engine}.json`),
     `${JSON.stringify(report, null, 2)}\n`,
   );
   const differences = report.comparisons.filter(

@@ -4,11 +4,11 @@ import { resolve } from "node:path";
 import { gzipSync } from "node:zlib";
 import { chromium } from "playwright";
 
-await mkdir(".omo/qa/tmp", { recursive: true });
-process.env.TEMP = process.env.TMP = resolve(".omo/qa/tmp");
-await mkdir(".omo/bench", { recursive: true });
+await mkdir(".cache/qa/tmp", { recursive: true });
+process.env.TEMP = process.env.TMP = resolve(".cache/qa/tmp");
+await mkdir(".cache/bench", { recursive: true });
 await writeFile(
-  ".omo/bench/old.ts",
+  ".cache/bench/old.ts",
   `import {calculatePath as calc} from "../../tests/reference/rankCalculator";
 import efficient from "../baseline/dist/rank-data-efficient.json";
 import heavy from "../baseline/dist/rank-data-match-heavy.json";
@@ -17,17 +17,17 @@ const data={efficient,"match-heavy":heavy,"target-second":second};
 export function calculatePath(rank,strategy){return calc(rank,strategy,data[strategy]);}`,
 );
 await writeFile(
-  ".omo/bench/new.ts",
+  ".cache/bench/new.ts",
   'export {calculatePath} from "../../src/utils/rankCalculator";',
 );
 for (const name of ["old", "new"]) {
   const build = await Bun.build({
-    entrypoints: [`.omo/bench/${name}.ts`],
+    entrypoints: [`.cache/bench/${name}.ts`],
     target: "browser",
     minify: true,
   });
   assert.ok(build.success);
-  await writeFile(`.omo/bench/${name}.js`, await build.outputs[0].text());
+  await writeFile(`.cache/bench/${name}.js`, await build.outputs[0].text());
 }
 const browser = await chromium.launch({ channel: "msedge", headless: true });
 const results = {
@@ -52,7 +52,7 @@ try {
       await cdp.send("Network.setCacheDisabled", { cacheDisabled: true });
       await page.route("**/bench.js", async (route) =>
         route.fulfill({
-          body: await readFile(`.omo/bench/${index ? "new" : "old"}.js`),
+          body: await readFile(`.cache/bench/${index ? "new" : "old"}.js`),
           contentType: "text/javascript",
         }),
       );
@@ -149,7 +149,7 @@ try {
       await context.close();
     }
   for (const [name, root] of [
-    ["old", ".omo/baseline/dist"],
+    ["old", ".cache/baseline/dist"],
     ["new", "dist"],
   ]) {
     const { readdir } = await import("node:fs/promises");

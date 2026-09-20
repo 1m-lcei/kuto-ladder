@@ -25,7 +25,8 @@ bun run build
 bun run preview
 ```
 
-dev/buildは境界データを再生成します。`bun run precompute` で個別に生成できます。
+順位ルールを変更した場合のみ `bun run precompute` で境界データを再生成します。
+dev/buildは追跡済みの生成物をそのまま使用します。
 生成物 `src/generated/rank-boundaries.json` は追跡対象です。順位ルールは
 `src/utils/rankRules.ts` に集約しています。
 

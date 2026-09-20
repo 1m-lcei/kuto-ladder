@@ -40,7 +40,7 @@
   --secondary: oklch(68.011% 0.158 276.934);
   --on-secondary: oklch(13.602% 0.031 276.934);
   --warning: oklch(83.242% 0.139 82.95);
-  --success: oklch(78.452% 0.132 181.911);
+  --success: var(--primary);
   --on-warning: oklch(16.648% 0.027 82.95);
   --error: oklch(71.785% 0.17 13.118);
   --on-error: oklch(14.357% 0.034 13.118);

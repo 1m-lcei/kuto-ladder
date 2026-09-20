@@ -12,7 +12,7 @@
       "!dist",
       "!node_modules",
       "!public",
-      "!.omo",
+      "!.cache",
       "!.codegraph",
       "!src/generated"
     ]
@@ -25,13 +25,7 @@
   "linter": {
     "enabled": true,
     "rules": {
-      "preset": "recommended",
-      "suspicious": {
-        "noUnknownAtRules": "off"
-      },
-      "correctness": {
-        "noUnknownProperty": "off"
-      }
+      "preset": "recommended"
     }
   },
   "javascript": {

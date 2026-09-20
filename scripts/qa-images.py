@@ -16,7 +16,7 @@ for engine in ["msedge","firefox","webkit"]:
    for row,case in enumerate(cases):
     pair=[]
     for version in [0,1]:
-     file=Path(f".omo/qa/{engine}/{width}-{theme}-{case}-{version}.png")
+     file=Path(f".cache/qa/{engine}/{width}-{theme}-{case}-{version}.png")
      im=Image.open(file).convert("RGB")
      assert im.size==(width,900)
      assert im.getextrema()!=((0,0),(0,0),(0,0))
