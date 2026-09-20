@@ -235,10 +235,15 @@ try {
   );
   const select = page.locator("select:visible");
   await select.focus();
-  await select.press("ArrowDown");
+  await page.keyboard.press("Space");
+  await page.keyboard.press("ArrowDown");
+  await page.keyboard.press("Enter");
   assert.equal(await select.inputValue(), "target-second");
   assert.equal(await page.locator(".rank-number").last().textContent(), "2位");
-  await select.press("ArrowUp");
+  await select.focus();
+  await page.keyboard.press("Space");
+  await page.keyboard.press("ArrowUp");
+  await page.keyboard.press("Enter");
   assert.equal(await select.inputValue(), "efficient");
   report.functional.push("native select changes strategy with keyboard arrows");
   for (const colorScheme of ["dark", "light"]) {

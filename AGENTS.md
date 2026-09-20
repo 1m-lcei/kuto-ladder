@@ -91,8 +91,9 @@ Build + Bun tests + browser checks are required for behavior changes.
 Run the commands in docs/verification.
 Compare production builds on their Pages mounts. Preserve vertical path content,
 order and colors; exact old control styling and pixel positions are no longer
-requirements after the CSS simplification. Use native select rendering, a fluid
-page width and static theme icons instead of recreating framework decoration.
+requirements after the CSS simplification. Keep the native select element; style
+its picker like the header menu with guarded base-select CSS, retaining the native
+fallback. Use a fluid page width and static theme icons.
 Validate DOM before screenshots, PNG signatures/dimensions, and inspect images.
 Keep browser temp profiles under `.cache/qa/tmp`; Playwright cleans them on close.
 Do not confuse Windows WebKit with Safari or a viewport with a mobile device.

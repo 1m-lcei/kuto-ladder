@@ -176,3 +176,19 @@ CSSの本番gzipサイズは2.64kBから1.76kBへ減少しました。
 
 再比較する場合は上記の基準worktreeを `0c70424` で用意して、同じPagesマウントと
 `node scripts/qa-browser.mjs msedge` を使います。標準selectの外観はOSに依存します。
+
+## 戦略リストの外観統一
+
+標準selectを保ったまま、`appearance: base-select` 対応環境ではリストの背景・文字色・
+枠線・角丸・余白・フォーカス色を右上メニューに揃えました。CSSは24行追加の344行。
+アプリのJavaScriptや依存関係は追加していません。
+[対応機能の説明（MDN）](https://developer.mozilla.org/en-US/docs/Learn_web_development/Extensions/Forms/Customizable_select)
+に従って `@supports` で装飾を限定し、非対応環境ではOS標準のselectを使います。
+
+Windows Edge 153.0.4234.48で、両テーマ×6幅の開閉・選択・Escape、リストの画面内配置、
+メニューとの背景/文字/枠線/角丸/余白/文字サイズの一致を確認しました。
+機能11項目（Space→矢印→Enterの選択を含む）、lint・全6 Bunテスト・buildも合格。
+追加CSSを無効にする代替動作確認でも、キーボード選択・経路更新・右上メニューが動作しました。
+これは実際の未対応ブラウザーでの検証ではありません。
+
+開いたリストの確認画像: [emerald](images/picker-emerald.png) / [night](images/picker-night.png)。
