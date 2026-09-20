@@ -234,6 +234,25 @@ try {
     "empty, bounds, ASCII/full-width/mixed digits, decimal, exponent, sign, whitespace, nonnumeric",
   );
   const select = page.locator("select:visible");
+  for (const width of [320, 359, 360, 375, 768, 1280]) {
+    await page.setViewportSize({ width, height: 900 });
+    const selectBox = await select.boundingBox();
+    const inputBox = await input.boundingBox();
+    for (const strategy of ["efficient", "target-second", "match-heavy"]) {
+      await select.selectOption(strategy);
+      assert.deepEqual(await select.boundingBox(), selectBox);
+      assert.deepEqual(await input.boundingBox(), inputBox);
+      assert.equal(
+        await select.evaluate((el) => el.scrollWidth <= el.clientWidth),
+        true,
+      );
+    }
+  }
+  await page.setViewportSize({ width: 375, height: 900 });
+  await select.selectOption("efficient");
+  report.functional.push(
+    "closed select and input stay fixed across all strategies at 6 widths, without clipping",
+  );
   await select.focus();
   await page.keyboard.press("Space");
   await page.keyboard.press("ArrowDown");

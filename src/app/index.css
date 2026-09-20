@@ -120,6 +120,26 @@ select:focus {
   select::picker(select) {
     appearance: base-select;
   }
+  select {
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.25rem;
+    white-space: nowrap;
+    width: 7.375rem;
+    flex-shrink: 0;
+  }
+  .strategy-compact {
+    width: 3.625rem;
+  }
+  select::picker-icon {
+    content: "";
+    margin-top: -4px;
+    width: 0.45rem;
+    height: 0.45rem;
+    border: solid currentColor;
+    border-width: 0 1.5px 1.5px 0;
+    rotate: 45deg;
+  }
   select::picker(select) {
     font: inherit;
     margin-block-start: 0.25rem;

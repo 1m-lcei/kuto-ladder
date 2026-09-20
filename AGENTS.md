@@ -55,6 +55,8 @@ TypeScript; Bun, Vite, TypeScript 7 and Biome. No runtime dependencies.
 - Unchanged DOM rows are reused by a content/tone key to meet throttled timing.
   Keep the input element and its focus intact. Exceptions go to the result alert.
 - At <360px strategy labels are emoji-only; at >=360px include Japanese labels.
+  The closed select keeps a stable width across strategies and centers its label;
+  changing selection must not resize the rank input or wrap the selected label.
 - Themes: emerald/night. System preference applies until a manual preference is
   saved. Keep early theme initialization and theme-color metadata synchronized.
   Valid input keeps the primary border/focus color in both themes; invalid input is red.
