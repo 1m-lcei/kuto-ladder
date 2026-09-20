@@ -10,7 +10,7 @@ Do not create an index if one is absent.
 # PROJECT KNOWLEDGE BASE
 
 Updated: 2026-09-20. Product: 2.0.0. Comparison baseline: `8e4ad79`.
-Work branch: `feat/2.0-standard-first`; main and Pages are not updated by this work.
+Branch: `main`. The 2.0 migration and UI follow-ups are integrated through `9b39e21`.
 
 ## Structure
 
@@ -106,3 +106,17 @@ TypeScript LSP (if needed): global typescript-language-server 5.3.0 with global
 TypeScript 6.0.3, while project builds remain on 7.x. Do not install global TS 7
 for this LSP: it lacks lib/tsserver.js. Verify actual diagnostics, not only install
 status. No project LSP config is needed.
+
+## Deployment
+
+- Public URL: https://1m-lcei.github.io/kuto-ladder/.
+- Source lives on `main`; publish its commits with `git push origin main`.
+- `bun run deploy` runs the predeploy build and publishes `dist` to `gh-pages`.
+  It does not push source commits to `main`. There is no custom deploy workflow.
+- Before publishing, run lint, Bun tests and browser checks against the production
+  Pages mount. After publishing, verify the live HTML and JS/CSS match `dist` and
+  exercise input, strategy, theme and menu on the public URL.
+- Latest available-browser QA: Windows Edge 153.0.4234.48, both themes and widths
+  320/359/360/375/768/1280. Native Safari/iOS/Android are not verified.
+- Bun regression suite: 6 tests, 60,592 assertions, including all 45,000 paths.
+  Closed select layout and menu-like picker styling are covered by browser QA.

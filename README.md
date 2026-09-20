@@ -35,7 +35,7 @@ dev/buildは追跡済みの生成物をそのまま使用します。
 
 previewは本番と同じ http://localhost:4173/kuto-ladder/ にマウントします。
 `bun run deploy` はビルドしてgh-pagesへ公開します。ソースのpushとは別操作です。
-2.0の今回の作業ではmain統合・push・公開は行っていません。
+ソースはmainで管理し、`git push origin main` で反映します。
 
 ## 検証と対応環境
 
