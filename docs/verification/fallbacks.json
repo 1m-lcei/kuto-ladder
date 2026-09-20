@@ -1,0 +1,12 @@
+{
+  "browser": "153.0.4234.48",
+  "checks": [
+    "anchor fallback positions on open, resize, scroll; Escape closes",
+    "missing Popover: trigger hidden, both links visible and keyboard focusable",
+    "paste-like input events, full-width raw value, alert associations, same focused input node",
+    "theme checkbox toggles with keyboard Space",
+    "production resources stay under Pages prefix; zero rank-data requests",
+    "pressed menu button retains baseline half-pixel displacement",
+    "saved theme and metadata apply before application JavaScript loads"
+  ]
+}

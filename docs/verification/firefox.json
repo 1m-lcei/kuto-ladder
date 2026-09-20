@@ -1,0 +1,990 @@
+{
+  "browser": "firefox",
+  "version": "153.0",
+  "date": "2026-09-20T05:10:21.880Z",
+  "comparisons": [
+    {
+      "width": 320,
+      "theme": "emerald",
+      "name": "short",
+      "rows": 2,
+      "maxDelta": 0,
+      "overflow": false,
+      "baselineOverflow": false
+    },
+    {
+      "width": 320,
+      "theme": "emerald",
+      "name": "primary-end",
+      "rows": 6,
+      "maxDelta": 0,
+      "overflow": false,
+      "baselineOverflow": false
+    },
+    {
+      "width": 320,
+      "theme": "emerald",
+      "name": "ten",
+      "rows": 11,
+      "maxDelta": 0,
+      "overflow": false,
+      "baselineOverflow": false
+    },
+    {
+      "width": 320,
+      "theme": "emerald",
+      "name": "eleven",
+      "rows": 12,
+      "maxDelta": 0,
+      "overflow": false,
+      "baselineOverflow": false
+    },
+    {
+      "width": 320,
+      "theme": "emerald",
+      "name": "eleven-end",
+      "rows": 12,
+      "maxDelta": 0,
+      "overflow": false,
+      "baselineOverflow": false
+    },
+    {
+      "width": 320,
+      "theme": "emerald",
+      "name": "longest",
+      "rows": 139,
+      "maxDelta": 0,
+      "overflow": false,
+      "baselineOverflow": false
+    },
+    {
+      "width": 320,
+      "theme": "emerald",
+      "name": "longest-end",
+      "rows": 139,
+      "maxDelta": 0,
+      "overflow": false,
+      "baselineOverflow": false
+    },
+    {
+      "width": 320,
+      "theme": "emerald",
+      "name": "warning",
+      "rows": 0,
+      "maxDelta": 0,
+      "overflow": false,
+      "baselineOverflow": false
+    },
+    {
+      "width": 320,
+      "theme": "emerald",
+      "name": "menu",
+      "rows": 11,
+      "maxDelta": 0,
+      "overflow": false,
+      "baselineOverflow": false
+    },
+    {
+      "width": 320,
+      "theme": "night",
+      "name": "short",
+      "rows": 2,
+      "maxDelta": 0,
+      "overflow": false,
+      "baselineOverflow": false
+    },
+    {
+      "width": 320,
+      "theme": "night",
+      "name": "primary-end",
+      "rows": 6,
+      "maxDelta": 0,
+      "overflow": false,
+      "baselineOverflow": false
+    },
+    {
+      "width": 320,
+      "theme": "night",
+      "name": "ten",
+      "rows": 11,
+      "maxDelta": 0,
+      "overflow": false,
+      "baselineOverflow": false
+    },
+    {
+      "width": 320,
+      "theme": "night",
+      "name": "eleven",
+      "rows": 12,
+      "maxDelta": 0,
+      "overflow": false,
+      "baselineOverflow": false
+    },
+    {
+      "width": 320,
+      "theme": "night",
+      "name": "eleven-end",
+      "rows": 12,
+      "maxDelta": 0,
+      "overflow": false,
+      "baselineOverflow": false
+    },
+    {
+      "width": 320,
+      "theme": "night",
+      "name": "longest",
+      "rows": 139,
+      "maxDelta": 0,
+      "overflow": false,
+      "baselineOverflow": false
+    },
+    {
+      "width": 320,
+      "theme": "night",
+      "name": "longest-end",
+      "rows": 139,
+      "maxDelta": 0,
+      "overflow": false,
+      "baselineOverflow": false
+    },
+    {
+      "width": 320,
+      "theme": "night",
+      "name": "warning",
+      "rows": 0,
+      "maxDelta": 0,
+      "overflow": false,
+      "baselineOverflow": false
+    },
+    {
+      "width": 320,
+      "theme": "night",
+      "name": "menu",
+      "rows": 11,
+      "maxDelta": 0,
+      "overflow": false,
+      "baselineOverflow": false
+    },
+    {
+      "width": 359,
+      "theme": "emerald",
+      "name": "short",
+      "rows": 2,
+      "maxDelta": 0,
+      "overflow": false,
+      "baselineOverflow": false
+    },
+    {
+      "width": 359,
+      "theme": "emerald",
+      "name": "primary-end",
+      "rows": 6,
+      "maxDelta": 0,
+      "overflow": false,
+      "baselineOverflow": false
+    },
+    {
+      "width": 359,
+      "theme": "emerald",
+      "name": "ten",
+      "rows": 11,
+      "maxDelta": 0,
+      "overflow": false,
+      "baselineOverflow": false
+    },
+    {
+      "width": 359,
+      "theme": "emerald",
+      "name": "eleven",
+      "rows": 12,
+      "maxDelta": 0,
+      "overflow": false,
+      "baselineOverflow": false
+    },
+    {
+      "width": 359,
+      "theme": "emerald",
+      "name": "eleven-end",
+      "rows": 12,
+      "maxDelta": 0,
+      "overflow": false,
+      "baselineOverflow": false
+    },
+    {
+      "width": 359,
+      "theme": "emerald",
+      "name": "longest",
+      "rows": 139,
+      "maxDelta": 0,
+      "overflow": false,
+      "baselineOverflow": false
+    },
+    {
+      "width": 359,
+      "theme": "emerald",
+      "name": "longest-end",
+      "rows": 139,
+      "maxDelta": 0,
+      "overflow": false,
+      "baselineOverflow": false
+    },
+    {
+      "width": 359,
+      "theme": "emerald",
+      "name": "warning",
+      "rows": 0,
+      "maxDelta": 0,
+      "overflow": false,
+      "baselineOverflow": false
+    },
+    {
+      "width": 359,
+      "theme": "emerald",
+      "name": "menu",
+      "rows": 11,
+      "maxDelta": 0,
+      "overflow": false,
+      "baselineOverflow": false
+    },
+    {
+      "width": 359,
+      "theme": "night",
+      "name": "short",
+      "rows": 2,
+      "maxDelta": 0,
+      "overflow": false,
+      "baselineOverflow": false
+    },
+    {
+      "width": 359,
+      "theme": "night",
+      "name": "primary-end",
+      "rows": 6,
+      "maxDelta": 0,
+      "overflow": false,
+      "baselineOverflow": false
+    },
+    {
+      "width": 359,
+      "theme": "night",
+      "name": "ten",
+      "rows": 11,
+      "maxDelta": 0,
+      "overflow": false,
+      "baselineOverflow": false
+    },
+    {
+      "width": 359,
+      "theme": "night",
+      "name": "eleven",
+      "rows": 12,
+      "maxDelta": 0,
+      "overflow": false,
+      "baselineOverflow": false
+    },
+    {
+      "width": 359,
+      "theme": "night",
+      "name": "eleven-end",
+      "rows": 12,
+      "maxDelta": 0,
+      "overflow": false,
+      "baselineOverflow": false
+    },
+    {
+      "width": 359,
+      "theme": "night",
+      "name": "longest",
+      "rows": 139,
+      "maxDelta": 0,
+      "overflow": false,
+      "baselineOverflow": false
+    },
+    {
+      "width": 359,
+      "theme": "night",
+      "name": "longest-end",
+      "rows": 139,
+      "maxDelta": 0,
+      "overflow": false,
+      "baselineOverflow": false
+    },
+    {
+      "width": 359,
+      "theme": "night",
+      "name": "warning",
+      "rows": 0,
+      "maxDelta": 0,
+      "overflow": false,
+      "baselineOverflow": false
+    },
+    {
+      "width": 359,
+      "theme": "night",
+      "name": "menu",
+      "rows": 11,
+      "maxDelta": 0,
+      "overflow": false,
+      "baselineOverflow": false
+    },
+    {
+      "width": 360,
+      "theme": "emerald",
+      "name": "short",
+      "rows": 2,
+      "maxDelta": 0,
+      "overflow": false,
+      "baselineOverflow": false
+    },
+    {
+      "width": 360,
+      "theme": "emerald",
+      "name": "primary-end",
+      "rows": 6,
+      "maxDelta": 0,
+      "overflow": false,
+      "baselineOverflow": false
+    },
+    {
+      "width": 360,
+      "theme": "emerald",
+      "name": "ten",
+      "rows": 11,
+      "maxDelta": 0,
+      "overflow": false,
+      "baselineOverflow": false
+    },
+    {
+      "width": 360,
+      "theme": "emerald",
+      "name": "eleven",
+      "rows": 12,
+      "maxDelta": 0,
+      "overflow": false,
+      "baselineOverflow": false
+    },
+    {
+      "width": 360,
+      "theme": "emerald",
+      "name": "eleven-end",
+      "rows": 12,
+      "maxDelta": 0,
+      "overflow": false,
+      "baselineOverflow": false
+    },
+    {
+      "width": 360,
+      "theme": "emerald",
+      "name": "longest",
+      "rows": 139,
+      "maxDelta": 0,
+      "overflow": false,
+      "baselineOverflow": false
+    },
+    {
+      "width": 360,
+      "theme": "emerald",
+      "name": "longest-end",
+      "rows": 139,
+      "maxDelta": 0,
+      "overflow": false,
+      "baselineOverflow": false
+    },
+    {
+      "width": 360,
+      "theme": "emerald",
+      "name": "warning",
+      "rows": 0,
+      "maxDelta": 0,
+      "overflow": false,
+      "baselineOverflow": false
+    },
+    {
+      "width": 360,
+      "theme": "emerald",
+      "name": "menu",
+      "rows": 11,
+      "maxDelta": 0,
+      "overflow": false,
+      "baselineOverflow": false
+    },
+    {
+      "width": 360,
+      "theme": "night",
+      "name": "short",
+      "rows": 2,
+      "maxDelta": 0,
+      "overflow": false,
+      "baselineOverflow": false
+    },
+    {
+      "width": 360,
+      "theme": "night",
+      "name": "primary-end",
+      "rows": 6,
+      "maxDelta": 0,
+      "overflow": false,
+      "baselineOverflow": false
+    },
+    {
+      "width": 360,
+      "theme": "night",
+      "name": "ten",
+      "rows": 11,
+      "maxDelta": 0,
+      "overflow": false,
+      "baselineOverflow": false
+    },
+    {
+      "width": 360,
+      "theme": "night",
+      "name": "eleven",
+      "rows": 12,
+      "maxDelta": 0,
+      "overflow": false,
+      "baselineOverflow": false
+    },
+    {
+      "width": 360,
+      "theme": "night",
+      "name": "eleven-end",
+      "rows": 12,
+      "maxDelta": 0,
+      "overflow": false,
+      "baselineOverflow": false
+    },
+    {
+      "width": 360,
+      "theme": "night",
+      "name": "longest",
+      "rows": 139,
+      "maxDelta": 0,
+      "overflow": false,
+      "baselineOverflow": false
+    },
+    {
+      "width": 360,
+      "theme": "night",
+      "name": "longest-end",
+      "rows": 139,
+      "maxDelta": 0,
+      "overflow": false,
+      "baselineOverflow": false
+    },
+    {
+      "width": 360,
+      "theme": "night",
+      "name": "warning",
+      "rows": 0,
+      "maxDelta": 0,
+      "overflow": false,
+      "baselineOverflow": false
+    },
+    {
+      "width": 360,
+      "theme": "night",
+      "name": "menu",
+      "rows": 11,
+      "maxDelta": 0,
+      "overflow": false,
+      "baselineOverflow": false
+    },
+    {
+      "width": 375,
+      "theme": "emerald",
+      "name": "short",
+      "rows": 2,
+      "maxDelta": 0,
+      "overflow": false,
+      "baselineOverflow": false
+    },
+    {
+      "width": 375,
+      "theme": "emerald",
+      "name": "primary-end",
+      "rows": 6,
+      "maxDelta": 0,
+      "overflow": false,
+      "baselineOverflow": false
+    },
+    {
+      "width": 375,
+      "theme": "emerald",
+      "name": "ten",
+      "rows": 11,
+      "maxDelta": 0,
+      "overflow": false,
+      "baselineOverflow": false
+    },
+    {
+      "width": 375,
+      "theme": "emerald",
+      "name": "eleven",
+      "rows": 12,
+      "maxDelta": 0,
+      "overflow": false,
+      "baselineOverflow": false
+    },
+    {
+      "width": 375,
+      "theme": "emerald",
+      "name": "eleven-end",
+      "rows": 12,
+      "maxDelta": 0,
+      "overflow": false,
+      "baselineOverflow": false
+    },
+    {
+      "width": 375,
+      "theme": "emerald",
+      "name": "longest",
+      "rows": 139,
+      "maxDelta": 0,
+      "overflow": false,
+      "baselineOverflow": false
+    },
+    {
+      "width": 375,
+      "theme": "emerald",
+      "name": "longest-end",
+      "rows": 139,
+      "maxDelta": 0,
+      "overflow": false,
+      "baselineOverflow": false
+    },
+    {
+      "width": 375,
+      "theme": "emerald",
+      "name": "warning",
+      "rows": 0,
+      "maxDelta": 0,
+      "overflow": false,
+      "baselineOverflow": false
+    },
+    {
+      "width": 375,
+      "theme": "emerald",
+      "name": "menu",
+      "rows": 11,
+      "maxDelta": 0,
+      "overflow": false,
+      "baselineOverflow": false
+    },
+    {
+      "width": 375,
+      "theme": "night",
+      "name": "short",
+      "rows": 2,
+      "maxDelta": 0,
+      "overflow": false,
+      "baselineOverflow": false
+    },
+    {
+      "width": 375,
+      "theme": "night",
+      "name": "primary-end",
+      "rows": 6,
+      "maxDelta": 0,
+      "overflow": false,
+      "baselineOverflow": false
+    },
+    {
+      "width": 375,
+      "theme": "night",
+      "name": "ten",
+      "rows": 11,
+      "maxDelta": 0,
+      "overflow": false,
+      "baselineOverflow": false
+    },
+    {
+      "width": 375,
+      "theme": "night",
+      "name": "eleven",
+      "rows": 12,
+      "maxDelta": 0,
+      "overflow": false,
+      "baselineOverflow": false
+    },
+    {
+      "width": 375,
+      "theme": "night",
+      "name": "eleven-end",
+      "rows": 12,
+      "maxDelta": 0,
+      "overflow": false,
+      "baselineOverflow": false
+    },
+    {
+      "width": 375,
+      "theme": "night",
+      "name": "longest",
+      "rows": 139,
+      "maxDelta": 0,
+      "overflow": false,
+      "baselineOverflow": false
+    },
+    {
+      "width": 375,
+      "theme": "night",
+      "name": "longest-end",
+      "rows": 139,
+      "maxDelta": 0,
+      "overflow": false,
+      "baselineOverflow": false
+    },
+    {
+      "width": 375,
+      "theme": "night",
+      "name": "warning",
+      "rows": 0,
+      "maxDelta": 0,
+      "overflow": false,
+      "baselineOverflow": false
+    },
+    {
+      "width": 375,
+      "theme": "night",
+      "name": "menu",
+      "rows": 11,
+      "maxDelta": 0,
+      "overflow": false,
+      "baselineOverflow": false
+    },
+    {
+      "width": 768,
+      "theme": "emerald",
+      "name": "short",
+      "rows": 2,
+      "maxDelta": 0,
+      "overflow": false,
+      "baselineOverflow": false
+    },
+    {
+      "width": 768,
+      "theme": "emerald",
+      "name": "primary-end",
+      "rows": 6,
+      "maxDelta": 0,
+      "overflow": false,
+      "baselineOverflow": false
+    },
+    {
+      "width": 768,
+      "theme": "emerald",
+      "name": "ten",
+      "rows": 11,
+      "maxDelta": 0,
+      "overflow": false,
+      "baselineOverflow": false
+    },
+    {
+      "width": 768,
+      "theme": "emerald",
+      "name": "eleven",
+      "rows": 12,
+      "maxDelta": 0,
+      "overflow": false,
+      "baselineOverflow": false
+    },
+    {
+      "width": 768,
+      "theme": "emerald",
+      "name": "eleven-end",
+      "rows": 12,
+      "maxDelta": 0,
+      "overflow": false,
+      "baselineOverflow": false
+    },
+    {
+      "width": 768,
+      "theme": "emerald",
+      "name": "longest",
+      "rows": 139,
+      "maxDelta": 0,
+      "overflow": false,
+      "baselineOverflow": false
+    },
+    {
+      "width": 768,
+      "theme": "emerald",
+      "name": "longest-end",
+      "rows": 139,
+      "maxDelta": 0,
+      "overflow": false,
+      "baselineOverflow": false
+    },
+    {
+      "width": 768,
+      "theme": "emerald",
+      "name": "warning",
+      "rows": 0,
+      "maxDelta": 0,
+      "overflow": false,
+      "baselineOverflow": false
+    },
+    {
+      "width": 768,
+      "theme": "emerald",
+      "name": "menu",
+      "rows": 11,
+      "maxDelta": 0,
+      "overflow": false,
+      "baselineOverflow": false
+    },
+    {
+      "width": 768,
+      "theme": "night",
+      "name": "short",
+      "rows": 2,
+      "maxDelta": 0,
+      "overflow": false,
+      "baselineOverflow": false
+    },
+    {
+      "width": 768,
+      "theme": "night",
+      "name": "primary-end",
+      "rows": 6,
+      "maxDelta": 0,
+      "overflow": false,
+      "baselineOverflow": false
+    },
+    {
+      "width": 768,
+      "theme": "night",
+      "name": "ten",
+      "rows": 11,
+      "maxDelta": 0,
+      "overflow": false,
+      "baselineOverflow": false
+    },
+    {
+      "width": 768,
+      "theme": "night",
+      "name": "eleven",
+      "rows": 12,
+      "maxDelta": 0,
+      "overflow": false,
+      "baselineOverflow": false
+    },
+    {
+      "width": 768,
+      "theme": "night",
+      "name": "eleven-end",
+      "rows": 12,
+      "maxDelta": 0,
+      "overflow": false,
+      "baselineOverflow": false
+    },
+    {
+      "width": 768,
+      "theme": "night",
+      "name": "longest",
+      "rows": 139,
+      "maxDelta": 0,
+      "overflow": false,
+      "baselineOverflow": false
+    },
+    {
+      "width": 768,
+      "theme": "night",
+      "name": "longest-end",
+      "rows": 139,
+      "maxDelta": 0,
+      "overflow": false,
+      "baselineOverflow": false
+    },
+    {
+      "width": 768,
+      "theme": "night",
+      "name": "warning",
+      "rows": 0,
+      "maxDelta": 0,
+      "overflow": false,
+      "baselineOverflow": false
+    },
+    {
+      "width": 768,
+      "theme": "night",
+      "name": "menu",
+      "rows": 11,
+      "maxDelta": 0,
+      "overflow": false,
+      "baselineOverflow": false
+    },
+    {
+      "width": 1280,
+      "theme": "emerald",
+      "name": "short",
+      "rows": 2,
+      "maxDelta": 0,
+      "overflow": false,
+      "baselineOverflow": false
+    },
+    {
+      "width": 1280,
+      "theme": "emerald",
+      "name": "primary-end",
+      "rows": 6,
+      "maxDelta": 0,
+      "overflow": false,
+      "baselineOverflow": false
+    },
+    {
+      "width": 1280,
+      "theme": "emerald",
+      "name": "ten",
+      "rows": 11,
+      "maxDelta": 0,
+      "overflow": false,
+      "baselineOverflow": false
+    },
+    {
+      "width": 1280,
+      "theme": "emerald",
+      "name": "eleven",
+      "rows": 12,
+      "maxDelta": 0,
+      "overflow": false,
+      "baselineOverflow": false
+    },
+    {
+      "width": 1280,
+      "theme": "emerald",
+      "name": "eleven-end",
+      "rows": 12,
+      "maxDelta": 0,
+      "overflow": false,
+      "baselineOverflow": false
+    },
+    {
+      "width": 1280,
+      "theme": "emerald",
+      "name": "longest",
+      "rows": 139,
+      "maxDelta": 0,
+      "overflow": false,
+      "baselineOverflow": false
+    },
+    {
+      "width": 1280,
+      "theme": "emerald",
+      "name": "longest-end",
+      "rows": 139,
+      "maxDelta": 0,
+      "overflow": false,
+      "baselineOverflow": false
+    },
+    {
+      "width": 1280,
+      "theme": "emerald",
+      "name": "warning",
+      "rows": 0,
+      "maxDelta": 0,
+      "overflow": false,
+      "baselineOverflow": false
+    },
+    {
+      "width": 1280,
+      "theme": "emerald",
+      "name": "menu",
+      "rows": 11,
+      "maxDelta": 0,
+      "overflow": false,
+      "baselineOverflow": false
+    },
+    {
+      "width": 1280,
+      "theme": "night",
+      "name": "short",
+      "rows": 2,
+      "maxDelta": 0,
+      "overflow": false,
+      "baselineOverflow": false
+    },
+    {
+      "width": 1280,
+      "theme": "night",
+      "name": "primary-end",
+      "rows": 6,
+      "maxDelta": 0,
+      "overflow": false,
+      "baselineOverflow": false
+    },
+    {
+      "width": 1280,
+      "theme": "night",
+      "name": "ten",
+      "rows": 11,
+      "maxDelta": 0,
+      "overflow": false,
+      "baselineOverflow": false
+    },
+    {
+      "width": 1280,
+      "theme": "night",
+      "name": "eleven",
+      "rows": 12,
+      "maxDelta": 0,
+      "overflow": false,
+      "baselineOverflow": false
+    },
+    {
+      "width": 1280,
+      "theme": "night",
+      "name": "eleven-end",
+      "rows": 12,
+      "maxDelta": 0,
+      "overflow": false,
+      "baselineOverflow": false
+    },
+    {
+      "width": 1280,
+      "theme": "night",
+      "name": "longest",
+      "rows": 139,
+      "maxDelta": 0,
+      "overflow": false,
+      "baselineOverflow": false
+    },
+    {
+      "width": 1280,
+      "theme": "night",
+      "name": "longest-end",
+      "rows": 139,
+      "maxDelta": 0,
+      "overflow": false,
+      "baselineOverflow": false
+    },
+    {
+      "width": 1280,
+      "theme": "night",
+      "name": "warning",
+      "rows": 0,
+      "maxDelta": 0,
+      "overflow": false,
+      "baselineOverflow": false
+    },
+    {
+      "width": 1280,
+      "theme": "night",
+      "name": "menu",
+      "rows": 11,
+      "maxDelta": 0,
+      "overflow": false,
+      "baselineOverflow": false
+    }
+  ],
+  "functional": [
+    "empty, bounds, ASCII/full-width/mixed digits, decimal, exponent, sign, whitespace, nonnumeric",
+    "synthetic composition commit/cancel holds previous result; native IME not covered",
+    "strategy uses last parsed rank, longest 139 rows, target-second rank 2 empty, Enter stays",
+    "system theme, manual priority, schema 1 settings, reload and browser theme-color",
+    "malformed, null, invalid fields and other-version settings",
+    "menu mouse/keyboard, Escape and light dismiss",
+    "unavailable storage does not disable calculation, strategy or theme",
+    "rendering exception reaches existing error alert",
+    "no rank-data requests"
+  ]
+}

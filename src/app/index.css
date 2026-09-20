@@ -15,6 +15,7 @@
   --secondary: oklch(61.302% 0.202 261.294);
   --on-secondary: oklch(100% 0 0);
   --warning: oklch(84.71% 0.199 83.87);
+  --success: oklch(64.8% 0.15 160);
   --on-warning: oklch(0% 0 0);
   --error: oklch(71.76% 0.221 22.18);
   --on-error: oklch(0% 0 0);
@@ -39,6 +40,7 @@
   --secondary: oklch(68.011% 0.158 276.934);
   --on-secondary: oklch(13.602% 0.031 276.934);
   --warning: oklch(83.242% 0.139 82.95);
+  --success: oklch(78.452% 0.132 181.911);
   --on-warning: oklch(16.648% 0.027 82.95);
   --error: oklch(71.785% 0.17 13.118);
   --on-error: oklch(14.357% 0.034 13.118);
@@ -147,10 +149,18 @@ select:open {
   outline: 2px solid var(--primary);
   outline-offset: 2px;
 }
-#rank:user-invalid {
+#rank:user-valid {
+  border-color: var(--success);
+}
+#rank:user-valid:focus {
+  outline-color: var(--success);
+}
+#rank:user-invalid,
+#rank[aria-invalid="true"] {
   border-color: var(--error);
 }
-#rank:user-invalid:focus {
+#rank:user-invalid:focus,
+#rank[aria-invalid="true"]:focus {
   outline-color: var(--error);
 }
 select {
@@ -225,13 +235,10 @@ option:focus-visible {
   font-weight: 600;
   transition:
     background-color 0.2s,
-    scale 0.2s;
+    border-color 0.2s;
 }
 .icon-button[hidden] {
   display: none;
-}
-.icon-button:active {
-  scale: 0.95;
 }
 .icon-button:focus-visible,
 .theme-toggle:has(input:focus-visible) {
@@ -328,10 +335,18 @@ option:focus-visible {
   }
 }
 @media (hover: hover) {
-  .icon-button:hover,
+  .icon-button:hover {
+    background-color: color-mix(in oklab, var(--surface-border), #000 7%);
+    border-color: color-mix(in oklab, var(--surface-border), #000 7%);
+  }
   #header-menu a:hover {
     background-color: color-mix(in oklab, var(--text) 10%, transparent);
   }
+}
+.icon-button:active {
+  translate: 0 0.5px;
+  background-color: color-mix(in oklab, var(--surface-border), #000 5%);
+  border-color: color-mix(in oklab, var(--surface-border), #000 7%);
 }
 #result:has(.rank-path) {
   max-width: var(--result-width);
