@@ -7,6 +7,7 @@ import { chromium } from "playwright";
 await mkdir(".cache/qa/tmp", { recursive: true });
 process.env.TEMP = process.env.TMP = resolve(".cache/qa/tmp");
 await mkdir(".cache/bench", { recursive: true });
+await mkdir("ai/v2/verification", { recursive: true });
 await writeFile(
   ".cache/bench/old.ts",
   `import {calculatePath as calc} from "../../tests/reference/rankCalculator";
@@ -161,7 +162,7 @@ try {
         ).length;
   }
   await writeFile(
-    "docs/verification/performance.json",
+    "ai/v2/verification/performance.json",
     `${JSON.stringify(results, null, 2)}\n`,
   );
   assert.ok(results.gzip.new <= 15000, "JS + CSS gzip <= 15 kB");

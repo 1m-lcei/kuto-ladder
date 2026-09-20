@@ -13,6 +13,7 @@
       "!node_modules",
       "!public",
       "!.cache",
+      "!ai",
       "!.codegraph",
       "!src/generated"
     ]

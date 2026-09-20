@@ -1,8 +1,8 @@
 from PIL import Image, ImageDraw, ImageChops
 from pathlib import Path
 import json
-out=Path("docs/verification/images")
-out.mkdir(exist_ok=True)
+out=Path("ai/v2/verification/images")
+out.mkdir(parents=True, exist_ok=True)
 cases=["short","primary-end","ten","eleven","eleven-end","longest","longest-end","warning","menu"]
 stats=[]
 for engine in ["msedge","firefox","webkit"]:
@@ -29,4 +29,4 @@ for engine in ["msedge","firefox","webkit"]:
    # Edge contains every viewport/theme; other engines use focused sample sheets.
    if engine=="msedge" or width==375:
     sheet.save(out/f"{engine}-{width}-{theme}.png",optimize=True)
-Path("docs/verification/pixels.json").write_text(json.dumps(stats,indent=2)+"\n")
+Path("ai/v2/verification/pixels.json").write_text(json.dumps(stats,indent=2)+"\n")
