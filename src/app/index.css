@@ -258,7 +258,7 @@ select {
   cursor: pointer;
 }
 .icon-button[hidden] {
-  display: none;
+  visibility: hidden;
 }
 .icon-button:focus-visible,
 .theme-toggle:has(input:focus-visible),
@@ -296,7 +296,7 @@ option:focus-visible {
     transition: rotate 0.25s ease;
   }
   @starting-style {
-    .theme-toggle svg {
+    .theme-toggle.theme-changed svg {
       rotate: -90deg;
     }
   }

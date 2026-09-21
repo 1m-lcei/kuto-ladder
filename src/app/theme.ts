@@ -13,6 +13,8 @@ const toggle = document.querySelector<HTMLInputElement>("#theme-toggle")!;
 
 function applyTheme() {
   const theme = manual ?? (system.matches ? "night" : "emerald");
+  if (document.documentElement.dataset.theme !== theme)
+    toggle.parentElement!.classList.add("theme-changed");
   window.applyTheme(theme);
   toggle.checked = theme === "night";
 }
