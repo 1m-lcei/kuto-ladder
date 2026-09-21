@@ -11,6 +11,7 @@ try {
   for (const mode of ["no-anchor", "no-popover"]) {
     const page = await browser.newPage({
       viewport: { width: 375, height: 700 },
+      reducedMotion: "reduce",
     });
     await page.addInitScript((mode) => {
       if (mode === "no-anchor") {

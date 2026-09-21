@@ -273,6 +273,29 @@ option:focus-visible {
   translate: none;
   width: auto;
 }
+@media screen and (prefers-reduced-motion: no-preference) {
+  @supports (transition-behavior: allow-discrete) and (overlay: auto) {
+    #header-menu[popover] {
+      opacity: 0;
+      transform: translateY(-0.25rem);
+      transition:
+        opacity 0.16s ease,
+        transform 0.16s ease,
+        display 0.16s allow-discrete,
+        overlay 0.16s allow-discrete;
+    }
+    #header-menu[popover]:popover-open {
+      opacity: 1;
+      transform: none;
+    }
+    @starting-style {
+      #header-menu[popover]:popover-open {
+        opacity: 0;
+        transform: translateY(-0.25rem);
+      }
+    }
+  }
+}
 @supports not (position-anchor: --header-menu-anchor) {
   #header-menu {
     translate: none;
