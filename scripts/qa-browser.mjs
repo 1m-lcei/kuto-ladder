@@ -32,6 +32,7 @@ const pages = await Promise.all(
         viewport: { width: 375, height: 900 },
         deviceScaleFactor: 1,
         colorScheme: "light",
+        reducedMotion: "reduce",
       });
       const page = await context.newPage();
       await page.goto(`http://localhost:${port}/kuto-ladder/`);

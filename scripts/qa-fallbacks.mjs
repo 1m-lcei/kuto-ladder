@@ -69,7 +69,10 @@ try {
     }
     await page.close();
   }
-  const page = await browser.newPage({ viewport: { width: 375, height: 700 } });
+  const page = await browser.newPage({
+    viewport: { width: 375, height: 700 },
+    reducedMotion: "reduce",
+  });
   await page.goto("http://localhost:4173/kuto-ladder/");
   const input = page.locator("#rank");
   await input.fill("123");

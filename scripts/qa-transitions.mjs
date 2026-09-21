@@ -61,6 +61,93 @@ try {
   assert.equal(await menu.evaluate((e) => e.getAnimations().length), 0);
   await page.keyboard.press("Escape");
   assert.equal(await menu.isVisible(), false);
+  await page.emulateMedia({ reducedMotion: "no-preference" });
+  const input = page.locator("#rank");
+  const hint = page.locator("#rank-hint");
+  const hintMidpoint = () =>
+    hint.evaluate((e) => {
+      const animations = e.getAnimations();
+      for (const a of animations) {
+        a.pause();
+        a.currentTime = a.effect.getTiming().duration / 2;
+      }
+      const style = getComputedStyle(e);
+      return {
+        count: animations.length,
+        height: e.getBoundingClientRect().height,
+        margin: parseFloat(style.marginTop),
+        display: style.display,
+      };
+    });
+  const finishHint = () =>
+    hint.evaluate((e) => {
+      for (const a of e.getAnimations()) a.finish();
+      return {
+        height: e.getBoundingClientRect().height,
+        display: getComputedStyle(e).display,
+      };
+    });
+  for (const theme of ["emerald", "night"]) {
+    await page.locator("#theme-toggle").setChecked(theme === "night");
+    for (const width of [320, 375, 1280]) {
+      await page.setViewportSize({ width, height: 700 });
+      await input.fill("1");
+      const opening = await hintMidpoint();
+      assert.ok(opening.count > 0);
+      assert.ok(opening.height > 0);
+      assert.ok(opening.margin > 0 && opening.margin < 12);
+      const full = await finishHint();
+      assert.ok(opening.height < full.height);
+      assert.equal(full.display, "flex");
+      if (width === 375) {
+        const png = await page.screenshot({
+          path: `.cache/qa/hint-expanded-${theme}.png`,
+        });
+        assert.equal(png.subarray(1, 4).toString(), "PNG");
+        assert.equal(png.readUInt32BE(16), width);
+        assert.equal(png.readUInt32BE(20), 700);
+      }
+      await input.fill("123");
+      const closing = await hintMidpoint();
+      assert.ok(closing.height > 0 && closing.height < full.height);
+      assert.equal(closing.display, "flex");
+      assert.equal((await finishHint()).display, "none");
+    }
+  }
+  await input.fill("1");
+  await page.waitForTimeout(40);
+  await input.fill("123");
+  await page.waitForTimeout(40);
+  await input.fill("1");
+  await page.waitForTimeout(240);
+  assert.equal(await hint.isVisible(), true);
+  await input.fill("");
+  await page.waitForTimeout(240);
+  assert.equal(await hint.isVisible(), false);
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await input.fill("1");
+  assert.equal(await hint.evaluate((e) => e.getAnimations().length), 0);
+  assert.equal(await hint.isVisible(), true);
+  await input.fill("");
+  assert.equal(await hint.isVisible(), false);
+  // Simulate an engine that skips the guarded intrinsic-size animation rules.
+  await page.evaluate(() => {
+    for (const sheet of document.styleSheets)
+      for (const rule of sheet.cssRules)
+        if (rule instanceof CSSMediaRule)
+          for (let i = rule.cssRules.length - 1; i >= 0; i--)
+            if (rule.cssRules[i].conditionText?.includes("interpolate-size"))
+              rule.deleteRule(i);
+  });
+  await page.emulateMedia({ reducedMotion: "no-preference" });
+  await input.fill("1");
+  assert.equal(await hint.isVisible(), true);
+  assert.equal(await hint.evaluate((e) => e.getAnimations().length), 0);
+  await input.fill("");
+  assert.equal(await hint.isVisible(), false);
+  console.log(
+    "PASS hint auto-height entry/exit, both themes x 3 widths, interrupted transitions, reduced motion",
+  );
   console.log(
     "PASS menu entry/exit, top layer retention, both themes x 6 widths, reduced motion",
   );
