@@ -1,5 +1,4 @@
 // biome-ignore-all lint/style/noNonNullAssertion: Elements are owned by the static HTML/templates.
-import "./index.css";
 import "./theme";
 import "./menu";
 import type { PathStrategy } from "../types/types";

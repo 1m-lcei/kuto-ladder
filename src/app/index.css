@@ -225,10 +225,10 @@ option:focus-visible {
   pointer-events: none;
 }
 .theme-toggle .moon,
-.theme-toggle:has(:checked) .sun {
+[data-theme="night"] .theme-toggle .sun {
   display: none;
 }
-.theme-toggle:has(:checked) .moon {
+[data-theme="night"] .theme-toggle .moon {
   display: block;
 }
 @media screen and (prefers-reduced-motion: no-preference) {

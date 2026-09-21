@@ -8,6 +8,7 @@
   <meta name="color-scheme" content="light dark" />
   <meta name="theme-color" media="(prefers-color-scheme: light)" content="#ffffff" />
   <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#0f172a" />
+  <link rel="stylesheet" href="/src/app/index.css" />
   <title>戦術対抗戦 経路</title>
   <meta name="description" content="戦術対抗戦 (PvP) の順位経路を計算・表示するWebアプリケーションです。" />
   <meta property="og:title" content="戦術対抗戦 経路" />
@@ -16,16 +17,20 @@
   <meta property="og:description" content="戦術対抗戦 (PvP) の順位経路を計算・表示するWebアプリケーションです。" />
   <meta property="og:locale" content="ja_JP" />
   <script>
+    // Shared by the early initialization and the interactive theme toggle.
+    window.applyTheme = (theme) => {
+      const dark = theme === "night";
+      document.documentElement.dataset.theme = theme;
+      document.querySelector('meta[name="color-scheme"]').content = dark ? "dark" : "light";
+      for (const meta of document.querySelectorAll('meta[name="theme-color"]')) meta.content = dark ? "#0f172a" : "#ffffff";
+    };
     (() => {
       let theme;
       try {
         const config = JSON.parse(localStorage.getItem("kuto-ladder-config"));
         if (config?.version === 1 && (config.theme === "night" || config.theme === "emerald")) theme = config.theme;
       } catch {}
-      theme ??= matchMedia("(prefers-color-scheme: dark)").matches ? "night" : "emerald";
-      document.documentElement.dataset.theme = theme;
-      document.querySelector('meta[name="color-scheme"]').content = theme === "night" ? "dark" : "light";
-      for (const meta of document.querySelectorAll('meta[name="theme-color"]')) meta.content = theme === "night" ? "#0f172a" : "#ffffff";
+      window.applyTheme(theme ?? (matchMedia("(prefers-color-scheme: dark)").matches ? "night" : "emerald"));
     })();
   </script>
 </head>
@@ -37,6 +42,7 @@
           <input id="theme-toggle" type="checkbox" aria-label="テーマの切り替え" />
           <svg
             class="sun" aria-hidden="true"
+            width="24" height="24"
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 24 24"
           >
@@ -45,6 +51,7 @@
           </svg>
           <svg
             class="moon" aria-hidden="true"
+            width="24" height="24"
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 24 24"
           >
@@ -106,7 +113,7 @@
             <svg class="error-icon" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
-            <span>半角・全角数字で2〜15001の整数を入力してください。</span>
+            <span>2〜15001の整数を入力してください。</span>
           </p>
         </form>
       </div>

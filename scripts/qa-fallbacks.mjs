@@ -164,6 +164,41 @@ try {
   report.checks.push(
     "saved theme and metadata apply before application JavaScript loads",
   );
+  for (const colorScheme of ["light", "dark"]) {
+    await page.emulateMedia({ colorScheme });
+    for (const [stored, manual] of [
+      ['{"version":1,"theme":"emerald"}', "emerald"],
+      ['{"version":1,"theme":"night"}', "night"],
+      ["{", null],
+      ["null", null],
+      ['{"version":1,"theme":"invalid"}', null],
+      ['{"version":2,"theme":"night"}', null],
+    ]) {
+      await page.evaluate(
+        (value) => localStorage.setItem("kuto-ladder-config", value),
+        stored,
+      );
+      await page.reload();
+      const theme = manual ?? (colorScheme === "dark" ? "night" : "emerald");
+      assert.equal(
+        await page.locator("html").getAttribute("data-theme"),
+        theme,
+      );
+      assert.equal(
+        await page.locator('meta[name="color-scheme"]').getAttribute("content"),
+        theme === "night" ? "dark" : "light",
+      );
+      assert.deepEqual(
+        await page
+          .locator('meta[name="theme-color"]')
+          .evaluateAll((metas) => metas.map((meta) => meta.content)),
+        Array(2).fill(theme === "night" ? "#0f172a" : "#ffffff"),
+      );
+    }
+  }
+  report.checks.push(
+    "early theme handles both system schemes, manual overrides and invalid storage without application JavaScript",
+  );
   for (const value of ["1", "15002", "2e2", "１２３"]) {
     await input.fill(value);
     assert.equal(
