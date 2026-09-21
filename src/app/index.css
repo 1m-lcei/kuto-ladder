@@ -284,6 +284,31 @@ option:focus-visible {
   gap: 0.5rem;
   min-height: 4rem;
 }
+@keyframes reveal {
+  from {
+    opacity: 0;
+    translate: 0 40px;
+  }
+  to {
+    opacity: 1;
+    translate: 0 0;
+  }
+}
+@media screen and (prefers-reduced-motion: no-preference) {
+  @supports (view-timeline: --rank-step block) and
+    (animation-timeline: --rank-step) and
+    (animation-range: entry 0% entry 100%) {
+    .rank-step {
+      view-timeline: --rank-step block;
+    }
+    .rank-step::after,
+    .rank-step > .rank-detail {
+      animation: reveal linear both;
+      animation-timeline: --rank-step;
+      animation-range: entry 0% entry 100%;
+    }
+  }
+}
 .rank-step::before {
   content: "";
   grid-area: 1 / 1;
