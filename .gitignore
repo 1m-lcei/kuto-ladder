@@ -27,3 +27,5 @@ ai/
 *.njsproj
 *.sln
 *.sw?
+
+assets/
