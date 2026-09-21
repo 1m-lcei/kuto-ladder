@@ -6,9 +6,9 @@ import { loadConfig, saveConfig } from "../utils/config";
 import { calculatePath } from "../utils/rankCalculator";
 
 const input = document.querySelector<HTMLInputElement>("#rank")!;
-const selects = document.querySelectorAll<HTMLSelectElement>(
+const select = document.querySelector<HTMLSelectElement>(
   "select[name=strategy]",
-);
+)!;
 const result = document.querySelector<HTMLElement>("#result")!;
 const rowTemplate = document.querySelector<HTMLTemplateElement>("#path-step")!;
 const alertTemplate =
@@ -89,15 +89,12 @@ input.addEventListener("compositionend", () => {
   composing = false;
   schedule();
 });
-for (const select of selects) {
-  select.value = strategy;
-  select.addEventListener("change", () => {
-    strategy = select.value as PathStrategy;
-    for (const other of selects) other.value = strategy;
-    render();
-    saveConfig({ strategy });
-  });
-}
+select.value = strategy;
+select.addEventListener("change", () => {
+  strategy = select.value as PathStrategy;
+  render();
+  saveConfig({ strategy });
+});
 document
   .querySelector("form")!
   .addEventListener("submit", (event) => event.preventDefault());

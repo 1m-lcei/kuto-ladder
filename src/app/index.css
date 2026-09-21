@@ -154,6 +154,11 @@ form:has(#rank:invalid:not(:placeholder-shown)) #rank-hint {
     }
   }
 }
+select {
+  width: 7.375rem;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
 @supports (appearance: base-select) {
   select,
   select::picker(select) {
@@ -163,12 +168,6 @@ form:has(#rank:invalid:not(:placeholder-shown)) #rank-hint {
     align-items: center;
     justify-content: space-between;
     gap: 0.25rem;
-    white-space: nowrap;
-    width: 7.375rem;
-    flex-shrink: 0;
-  }
-  .strategy-compact {
-    width: 3.625rem;
   }
   select::picker-icon {
     content: "";
@@ -220,15 +219,23 @@ form:has(#rank:invalid:not(:placeholder-shown)) #rank-hint {
     background: color-mix(in oklab, var(--text) 10%, transparent);
   }
 }
-.strategy-full {
-  display: none;
-}
-@media (width >= 360px) {
-  .strategy-full {
-    display: inline-flex;
+@media (width < 360px) {
+  @supports (appearance: base-select) {
+    select {
+      width: 3.625rem;
+    }
+    select > button .strategy-label {
+      display: none;
+    }
   }
-  .strategy-compact {
-    display: none;
+  @supports not (appearance: base-select) {
+    .rank-fields {
+      flex-direction: column;
+      align-items: stretch;
+    }
+    select {
+      align-self: flex-end;
+    }
   }
 }
 

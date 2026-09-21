@@ -267,10 +267,22 @@ try {
     "HTML-only validity: empty, bounds, ASCII/full-width/mixed digits, decimal, exponent, sign, whitespace, nonnumeric",
   );
   const select = page.locator("select:visible");
+  assert.equal(await page.locator("select").count(), 1);
+  const customSelect = await page.evaluate(() =>
+    CSS.supports("appearance", "base-select"),
+  );
   for (const width of [320, 359, 360, 375, 768, 1280]) {
     await page.setViewportSize({ width, height: 900 });
     const selectBox = await select.boundingBox();
     const inputBox = await input.boundingBox();
+    assert.equal(selectBox.y > inputBox.y, width < 360 && !customSelect);
+    if (width < 360 && !customSelect) assert.ok(inputBox.width >= 170);
+    if (customSelect) {
+      assert.equal(
+        await select.locator("button .strategy-label").isVisible(),
+        width >= 360,
+      );
+    }
     for (const strategy of ["efficient", "target-second", "match-heavy"]) {
       await select.selectOption(strategy);
       assert.deepEqual(await select.boundingBox(), selectBox);
@@ -287,15 +299,15 @@ try {
     "closed select and input stay fixed across all strategies at 6 widths, without clipping",
   );
   await select.focus();
-  await page.keyboard.press("Space");
+  if (customSelect) await page.keyboard.press("Space");
   await page.keyboard.press("ArrowDown");
-  await page.keyboard.press("Enter");
+  if (customSelect) await page.keyboard.press("Enter");
   assert.equal(await select.inputValue(), "target-second");
   assert.equal(await page.locator(".rank-number").last().textContent(), "2位");
   await select.focus();
-  await page.keyboard.press("Space");
+  if (customSelect) await page.keyboard.press("Space");
   await page.keyboard.press("ArrowUp");
-  await page.keyboard.press("Enter");
+  if (customSelect) await page.keyboard.press("Enter");
   assert.equal(await select.inputValue(), "efficient");
   report.functional.push("native select changes strategy with keyboard arrows");
   for (const colorScheme of ["dark", "light"]) {

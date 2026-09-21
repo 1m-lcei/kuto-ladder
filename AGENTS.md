@@ -60,7 +60,9 @@ TypeScript; Bun, Vite, TypeScript 7 and Biome. No runtime dependencies.
   neutral. Apply the same rule to the terminal row.
 - Unchanged DOM rows are reused by a content/tone key to meet throttled timing.
   Keep the input element and its focus intact. Exceptions go to the result alert.
-- At <360px strategy labels are emoji-only; at >=360px include Japanese labels.
+- Use one native strategy select with selectedcontent. At <360px, customizable
+  select displays emoji-only; unsupported browsers use two form rows and retain
+  Japanese labels. At >=360px, both render Japanese labels in a single form row.
   The closed select keeps a stable width across strategies and centers its label;
   changing selection must not resize the rank input or wrap the selected label.
 - Themes: emerald/night. System preference applies until a manual preference is

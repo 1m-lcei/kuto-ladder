@@ -106,8 +106,12 @@
               <!-- Optional leading zeros; 2–9, 10–9999, 10000–14999, 15000–15001. -->
               <input id="rank" type="text" inputmode="numeric" pattern="[0０]*([2-9２-９]|[1-9１-９][0-9０-９]{1,3}|[1１][0-4０-４][0-9０-９]{3}|[1１][5５][0０]{2}[0-1０-１])" required aria-describedby="rank-hint" placeholder="2 ～ 15001" />
             </div>
-            <select class="strategy-full" name="strategy" aria-label="経路戦略"><option value="efficient" label="🏅 登頂">🏅 登頂</option><option value="target-second" label="🥈 2位狙い">🥈 2位狙い</option><option value="match-heavy" label="😈 最多対戦">😈 最多対戦</option></select>
-            <select class="strategy-compact" name="strategy" aria-label="経路戦略"><option value="efficient" label="🏅">🏅 登頂</option><option value="target-second" label="🥈">🥈 2位狙い</option><option value="match-heavy" label="😈">😈 最多対戦</option></select>
+            <select name="strategy" aria-label="経路戦略">
+              <button type="button"><selectedcontent></selectedcontent></button>
+              <option value="efficient"><span aria-hidden="true">🏅</span> <span class="strategy-label">登頂</span></option>
+              <option value="target-second"><span aria-hidden="true">🥈</span> <span class="strategy-label">2位狙い</span></option>
+              <option value="match-heavy"><span aria-hidden="true">😈</span> <span class="strategy-label">最多対戦</span></option>
+            </select>
           </div>
           <p id="rank-hint" role="alert">
             <svg class="error-icon" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none">
