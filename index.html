@@ -110,7 +110,7 @@
             <div class="rank-entry">
               <label for="rank">開始順位</label>
               <!-- Optional leading zeros; 2–9, 10–9999, 10000–14999, 15000–15001. -->
-              <input id="rank" type="text" inputmode="numeric" pattern="[0０]*([2-9２-９]|[1-9１-９][0-9０-９]{1,3}|[1１][0-4０-４][0-9０-９]{3}|[1１][5５][0０]{2}[0-1０-１])" required aria-describedby="rank-hint" placeholder="2 ～ 15001" />
+              <input id="rank" type="number" inputmode="numeric" pattern="[0０]*([2-9２-９]|[1-9１-９][0-9０-９]{1,3}|[1１][0-4０-４][0-9０-９]{3}|[1１][5５][0０]{2}[0-1０-１])" required aria-describedby="rank-hint" placeholder="2 ～ 15001" />
             </div>
             <select name="strategy" aria-label="経路戦略">
               <button type="button"><selectedcontent></selectedcontent></button>
