@@ -31,7 +31,7 @@ TypeScript; Bun, Vite, TypeScript 7 and Biome. No runtime dependencies.
 | O(N) data generator | `scripts/precompute.ts` |
 | Tracked 795-byte generated data | `src/generated/rank-boundaries.json` |
 | Frozen old algorithm and exhaustive comparisons | `tests/` |
-| Browser checks and timings | `scripts/qa-*.mjs` |
+| Local browser checks and timings (Git-ignored) | `scripts/qa-*.mjs` |
 | Comparison evidence and known coverage gaps | `ai/v2/verification/` |
 
 ## Invariants
@@ -99,7 +99,8 @@ tsconfig files are JSONC, not strict JSON.
 
 Build + Bun tests + browser checks are required for behavior changes.
 Local verification records live in `ai/v2/verification/` (Git-ignored).
-Run its README commands when available; QA scripts remain tracked in `scripts/`.
+Run its README commands when available; scripts are local and Git-ignored except
+`scripts/precompute.ts` and `scripts/qa-server.ts`.
 Compare production builds on their Pages mounts. Preserve vertical path content,
 order and colors; exact old control styling and pixel positions are no longer
 requirements after the CSS simplification. Keep the native select element; style

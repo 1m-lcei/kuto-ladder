@@ -16,6 +16,11 @@ dist-ssr
 .cache/
 ai/
 
+# Local verification scripts
+/scripts/*
+!/scripts/precompute.ts
+!/scripts/qa-server.ts
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
