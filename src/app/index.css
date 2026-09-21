@@ -295,6 +295,28 @@ option:focus-visible {
   }
 }
 @media screen and (prefers-reduced-motion: no-preference) {
+  @supports (transition-delay: calc(0.03s * (sibling-index() - 1))) {
+    .rank-step {
+      transition-delay: min(1s, calc(0.03s * (sibling-index() - 1)));
+    }
+    .rank-step::before,
+    .rank-step::after,
+    .rank-step > .rank-detail {
+      /* Separate properties let entry transitions and scroll reveal coexist. */
+      transition:
+        filter 0.16s ease,
+        transform 0.48s ease;
+      transition-delay: inherit;
+    }
+    @starting-style {
+      .rank-step::before,
+      .rank-step::after,
+      .rank-step > .rank-detail {
+        filter: opacity(0);
+        transform: translateY(36px);
+      }
+    }
+  }
   @supports (view-timeline: --rank-step block) and
     (animation-timeline: --rank-step) and
     (animation-range: entry 0% entry 100%) {
