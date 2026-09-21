@@ -9,6 +9,83 @@ const browser = await chromium.launch({ channel: "msedge", headless: true });
 try {
   const page = await browser.newPage({ viewport: { width: 375, height: 700 } });
   await page.goto("http://localhost:4173/kuto-ladder/");
+  const select = page.locator("select:visible");
+  // Picker transitions live in the UA shadow tree and are not exposed by getAnimations().
+  const pickerMidpoint = () =>
+    select.evaluate(async (e) => {
+      const deadline = performance.now() + 1000;
+      while (performance.now() < deadline) {
+        const style = getComputedStyle(e, "::picker(select)");
+        const opacity = +style.opacity;
+        if (opacity > 0 && opacity < 1)
+          return {
+            opacity,
+            display: style.display,
+            overlay: style.overlay,
+            duration: style.transitionDuration,
+          };
+        await new Promise(requestAnimationFrame);
+      }
+      throw new Error("Picker did not reach an intermediate opacity");
+    });
+  const pickerSettled = async (open) => {
+    await page.waitForFunction((open) => {
+      const e = [...document.querySelectorAll("select")].find(
+        (e) => e.getBoundingClientRect().width,
+      );
+      const style = getComputedStyle(e, "::picker(select)");
+      return open ? style.opacity === "1" : style.display === "none";
+    }, open);
+  };
+  for (const theme of ["emerald", "night"]) {
+    await page.locator("#theme-toggle").setChecked(theme === "night");
+    for (const width of [320, 359, 360, 375, 768, 1280]) {
+      await page.setViewportSize({ width, height: 700 });
+      const before = await select.boundingBox();
+      await select.click();
+      const opening = await pickerMidpoint();
+      assert.equal(opening.overlay, "auto");
+      assert.ok(
+        opening.duration.split(", ").every((duration) => duration === "0.16s"),
+      );
+      await pickerSettled(true);
+      if (width === 375) {
+        const png = await page.screenshot({
+          path: `.cache/qa/picker-${theme}.png`,
+        });
+        assert.equal(png.subarray(1, 4).toString(), "PNG");
+        assert.equal(png.readUInt32BE(16), width);
+        assert.equal(png.readUInt32BE(20), 700);
+      }
+      await page.keyboard.press("Escape");
+      const closing = await pickerMidpoint();
+      assert.notEqual(closing.display, "none");
+      assert.equal(closing.overlay, "auto");
+      await pickerSettled(false);
+      assert.deepEqual(await select.boundingBox(), before);
+    }
+  }
+  await select.focus();
+  await page.keyboard.press("Space");
+  await pickerSettled(true);
+  await page.keyboard.press("ArrowDown");
+  await page.keyboard.press("Enter");
+  await pickerMidpoint();
+  await pickerSettled(false);
+  assert.equal(await select.inputValue(), "target-second");
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await select.click();
+  assert.equal(
+    await select.evaluate(
+      (e) => getComputedStyle(e, "::picker(select)").transitionDuration,
+    ),
+    "0s",
+  );
+  await page.keyboard.press("Escape");
+  await page.emulateMedia({ reducedMotion: "no-preference" });
+  console.log(
+    "PASS picker entry/exit, both themes x 6 widths, stable trigger, keyboard selection, reduced motion",
+  );
   const menu = page.locator("#header-menu");
   const midpoint = () =>
     menu.evaluate((e) => {

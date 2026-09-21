@@ -188,6 +188,29 @@ form:has(#rank:invalid:not(:placeholder-shown)) #rank-hint {
     background: var(--surface);
     color: var(--text);
   }
+  @media screen and (prefers-reduced-motion: no-preference) {
+    @supports (transition-behavior: allow-discrete) and (overlay: auto) {
+      select::picker(select) {
+        opacity: 0;
+        transform: translateY(-0.25rem);
+        transition:
+          opacity 0.16s ease,
+          transform 0.16s ease,
+          display 0.16s allow-discrete,
+          overlay 0.16s allow-discrete;
+      }
+      select:open::picker(select) {
+        opacity: 1;
+        transform: none;
+      }
+      @starting-style {
+        select:open::picker(select) {
+          opacity: 0;
+          transform: translateY(-0.25rem);
+        }
+      }
+    }
+  }
   option {
     padding: 0.375rem 0.75rem;
     border-radius: 0.25rem;
