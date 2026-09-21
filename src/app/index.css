@@ -221,6 +221,17 @@ option:focus-visible {
 .theme-toggle:has(:checked) .moon {
   display: block;
 }
+@media screen and (prefers-reduced-motion: no-preference) {
+  .theme-toggle svg {
+    rotate: 0deg;
+    transition: rotate 0.25s ease;
+  }
+  @starting-style {
+    .theme-toggle svg {
+      rotate: -90deg;
+    }
+  }
+}
 .menu-icon {
   width: 1.25rem;
   height: 1.25rem;
