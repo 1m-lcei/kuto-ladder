@@ -9,9 +9,6 @@ Do not create an index if one is absent.
 
 # PROJECT KNOWLEDGE BASE
 
-Updated: 2026-09-20. Product: 2.0.0. Comparison baseline: `8e4ad79`.
-Branch: `main`. The 2.0 migration and UI follow-ups are integrated through `9b39e21`.
-
 ## Structure
 
 Japanese Tactical Challenge rank-path application. Static HTML, standard CSS and
@@ -25,14 +22,13 @@ TypeScript; Bun, Vite, TypeScript 7 and Biome. No runtime dependencies.
 | System/manual theme and browser metadata | `src/app/theme.ts` |
 | Native Popover and positioning fallback | `src/app/menu.ts` |
 | Validated schema 1 localStorage | `src/utils/config.ts` |
-| Native rank validation (required/pattern) | `index.html`, `tests/rankInput.test.ts` |
+| Rank input and pattern tests | `index.html`, `tests/rankInput.test.ts` |
 | Shared rank rules and maximum | `src/utils/rankRules.ts` |
 | Bundled-boundary path calculation | `src/utils/rankCalculator.ts` |
 | O(N) data generator | `scripts/precompute.ts` |
-| Tracked 795-byte generated data | `src/generated/rank-boundaries.json` |
+| Tracked generated data | `src/generated/rank-boundaries.json` |
 | Frozen old algorithm and exhaustive comparisons | `tests/` |
-| Local browser checks and timings (Git-ignored) | `scripts/qa-*.mjs` |
-| Comparison evidence and known coverage gaps | `ai/v2/verification/` |
+| Production preview server | `scripts/qa-server.ts` |
 
 ## Invariants
 
@@ -43,16 +39,12 @@ TypeScript; Bun, Vite, TypeScript 7 and Biome. No runtime dependencies.
 - Range multiplication/flooring must retain the old arithmetic exactly.
   Runtime and generation share `getNextRankRange`; the generator cannot import
   its own generated data. Regenerate and run all comparisons when rules change.
-- Input remains text with `inputMode="numeric"`. HTML `required` and `pattern`
-  validate ASCII/full-width/mixed digits, optional leading zeros, and 2–15001.
-  Keep the pattern synchronized with MAX_RANK; do not use setCustomValidity or
-  validation state in TypeScript. CSS `:invalid:not(:placeholder-shown)` shows
-  the error border and HTML hint immediately for nonempty invalid input, without
-  waiting for blur or Enter. Never rewrite the input value for normalization.
-  The form uses novalidate to suppress native validation popups; native validity
-  and CSS feedback still apply. Keep the hint associated via aria-describedby.
-  After 200ms, read native validity and convert valid input for calculation;
-  invalid/empty input clears the result. Initial empty input has no error styling.
+- Input uses `type="number"` and `inputmode="numeric"`. Keep the hint associated
+  via `aria-describedby` and suppress native validation popups with `novalidate`.
+  After 200ms, read native validity and convert valid input for calculation.
+  Never rewrite the input value for normalization. Initial empty input has no
+  error styling. The HTML pattern test checks the regex only; number inputs do
+  not enforce `pattern`, so it does not verify browser range/full-width handling.
 - Composition cancels pending parsing; compositionend restarts the debounce.
   Strategy changes use the last completed parse. Form submission cannot navigate.
 - Render the complete vertical path, including all 138 matches. Index 0–5 is
@@ -95,27 +87,27 @@ Biome owns formatting/imports (two spaces, double quotes, semicolons). Generated
 JSON is excluded from formatting so it stays compact. Tool artifacts are excluded.
 tsconfig files are JSONC, not strict JSON.
 
+## Git workflow
+
+- Use concise Conventional Commit messages, e.g. `fix: preserve input focus`.
+- Do not commit disposable verification code (`.mjs`, `.py`, or other formats),
+  screenshots, or temporary output. Keep them in Git-ignored locations.
+- `scripts/` is Git-ignored except `precompute.ts` and `qa-server.ts`.
+  Do not force-add local verification scripts. Regression tests in `tests/`
+  remain tracked.
+
 ## QA
 
 Build + Bun tests + browser checks are required for behavior changes.
-Local verification records live in `ai/v2/verification/` (Git-ignored).
-Run its README commands when available; scripts are local and Git-ignored except
-`scripts/precompute.ts` and `scripts/qa-server.ts`.
-Compare production builds on their Pages mounts. Preserve vertical path content,
-order and colors; exact old control styling and pixel positions are no longer
-requirements after the CSS simplification. Keep the native select element; style
-its picker like the header menu with guarded base-select CSS, retaining the native
-fallback. Use a fluid page width and static theme icons.
+Local verification records may live in `ai/v2/verification/` (Git-ignored).
+Use its README commands when available; local scripts are not supplied by a clone.
+Check production builds on their Pages mount, both themes, narrow layouts around
+the 360px breakpoint, and native select/Popover/anchor fallbacks.
 Validate DOM before screenshots, PNG signatures/dimensions, and inspect images.
 Keep browser temp profiles under `.cache/qa/tmp`; Playwright cleans them on close.
 Do not confuse Windows WebKit with Safari or a viewport with a mobile device.
 Synthetic composition events cover application handling, not native IME behavior.
-Report unavailable coverage honestly; the user approved testing available systems.
-
-TypeScript LSP (if needed): global typescript-language-server 5.3.0 with global
-TypeScript 6.0.3, while project builds remain on 7.x. Do not install global TS 7
-for this LSP: it lacks lib/tsserver.js. Verify actual diagnostics, not only install
-status. No project LSP config is needed.
+Report unavailable coverage honestly.
 
 ## Deployment
 
@@ -126,7 +118,3 @@ status. No project LSP config is needed.
 - Before publishing, run lint, Bun tests and browser checks against the production
   Pages mount. After publishing, verify the live HTML and JS/CSS match `dist` and
   exercise input, strategy, theme and menu on the public URL.
-- Latest available-browser QA: Windows Edge 153.0.4234.48, both themes and widths
-  320/359/360/375/768/1280. Native Safari/iOS/Android are not verified.
-- Bun regression suite: 6 tests, 60,592 assertions, including all 45,000 paths.
-  Closed select layout and menu-like picker styling are covered by browser QA.
