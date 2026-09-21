@@ -4,7 +4,6 @@ import "./theme";
 import "./menu";
 import type { PathStrategy } from "../types/types";
 import { loadConfig, saveConfig } from "../utils/config";
-import { parseRank } from "../utils/parseRank";
 import { calculatePath } from "../utils/rankCalculator";
 
 const input = document.querySelector<HTMLInputElement>("#rank")!;
@@ -20,25 +19,13 @@ let rank: number | null = null;
 let composing = false;
 let timer: ReturnType<typeof setTimeout>;
 
-function alert(message: string, invalid = false) {
+function alert(message: string) {
   const fragment = alertTemplate.content.cloneNode(true) as DocumentFragment;
-  const box = fragment.querySelector<HTMLElement>("[role=alert]")!;
-  box.classList.add(invalid ? "warning" : "error");
-  if (invalid) box.id = "rank-error";
   fragment.querySelector("span")!.textContent = message;
   result.replaceChildren(fragment);
 }
 
 function render() {
-  const invalid = rank !== null && Number.isNaN(rank);
-  input.toggleAttribute("aria-invalid", invalid);
-  if (invalid) {
-    input.setAttribute("aria-invalid", "true");
-    input.setAttribute("aria-describedby", "rank-error");
-    alert("有効な開始順位（2～15001）を入力してください。", true);
-    return;
-  }
-  input.removeAttribute("aria-describedby");
   try {
     const path = rank === null ? [] : calculatePath(rank, strategy);
     if (!path.length) {
@@ -90,7 +77,7 @@ function schedule() {
   clearTimeout(timer);
   if (composing) return;
   timer = setTimeout(() => {
-    rank = parseRank(input.value);
+    rank = input.validity.valid ? Number(input.value.normalize("NFKC")) : null;
     render();
   }, 200);
 }

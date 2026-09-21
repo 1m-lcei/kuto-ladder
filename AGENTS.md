@@ -25,7 +25,7 @@ TypeScript; Bun, Vite, TypeScript 7 and Biome. No runtime dependencies.
 | System/manual theme and browser metadata | `src/app/theme.ts` |
 | Native Popover and positioning fallback | `src/app/menu.ts` |
 | Validated schema 1 localStorage | `src/utils/config.ts` |
-| Integer-only parsing | `src/utils/parseRank.ts` |
+| Native rank validation (required/pattern) | `index.html`, `tests/rankInput.test.ts` |
 | Shared rank rules and maximum | `src/utils/rankRules.ts` |
 | Bundled-boundary path calculation | `src/utils/rankCalculator.ts` |
 | O(N) data generator | `scripts/precompute.ts` |
@@ -43,10 +43,16 @@ TypeScript; Bun, Vite, TypeScript 7 and Biome. No runtime dependencies.
 - Range multiplication/flooring must retain the old arithmetic exactly.
   Runtime and generation share `getNextRankRange`; the generator cannot import
   its own generated data. Regenerate and run all comparisons when rules change.
-- Input remains text with `inputMode="numeric"` and `pattern="[0-9０-９]*"`.
-  Never rewrite the input value for normalization. Parse only ASCII/full-width
-  digits after 200ms; empty is silent; signs, decimals, exponents, whitespace,
-  other characters and out-of-range values show the existing Japanese warning.
+- Input remains text with `inputMode="numeric"`. HTML `required` and `pattern`
+  validate ASCII/full-width/mixed digits, optional leading zeros, and 2–15001.
+  Keep the pattern synchronized with MAX_RANK; do not use setCustomValidity or
+  validation state in TypeScript. CSS `:invalid:not(:placeholder-shown)` shows
+  the error border and HTML hint immediately for nonempty invalid input, without
+  waiting for blur or Enter. Never rewrite the input value for normalization.
+  The form uses novalidate to suppress native validation popups; native validity
+  and CSS feedback still apply. Keep the hint associated via aria-describedby.
+  After 200ms, read native validity and convert valid input for calculation;
+  invalid/empty input clears the result. Initial empty input has no error styling.
 - Composition cancels pending parsing; compositionend restarts the debounce.
   Strategy changes use the last completed parse. Form submission cannot navigate.
 - Render the complete vertical path, including all 138 matches. Index 0–5 is

@@ -86,9 +86,9 @@ try {
     );
   });
   await page.waitForTimeout(240);
-  assert.equal(await page.locator("#rank-error").count(), 1);
-  assert.equal(await input.getAttribute("aria-invalid"), "true");
-  assert.equal(await input.getAttribute("aria-describedby"), "rank-error");
+  assert.equal(await page.locator(".rank-step").count(), 0);
+  assert.equal(await input.evaluate((e) => e.validity.patternMismatch), true);
+  assert.equal(await input.evaluate((e) => e.validity.customError), false);
   await input.fill("１２３");
   await page.waitForTimeout(240);
   assert.equal(
@@ -98,7 +98,7 @@ try {
   assert.equal(await input.evaluate((e) => e === window.originalInput), true);
   assert.equal(await input.evaluate((e) => document.activeElement === e), true);
   report.checks.push(
-    "paste-like input events, full-width raw value, alert associations, same focused input node",
+    "paste-like input events, native validity, full-width raw value, same focused input node",
   );
   await page.locator("#theme-toggle").focus();
   await page.keyboard.press("Space");
@@ -116,6 +116,37 @@ try {
   report.checks.push(
     "production resources stay under Pages prefix; zero rank-data requests",
   );
+  await input.fill("1");
+  await page.locator("form").evaluate((form) => {
+    form.addEventListener(
+      "submit",
+      () => {
+        form.dataset.submitted = "true";
+      },
+      { once: true },
+    );
+    form.addEventListener(
+      "invalid",
+      () => {
+        form.dataset.invalidEvent = "true";
+      },
+      true,
+    );
+  });
+  await input.press("Enter");
+  assert.equal(
+    await page.locator("form").getAttribute("data-submitted"),
+    "true",
+  );
+  assert.equal(
+    await page.locator("form").getAttribute("data-invalid-event"),
+    null,
+  );
+  assert.equal(await input.evaluate((e) => e.validity.valid), false);
+  assert.ok(page.url().endsWith("/kuto-ladder/"));
+  report.checks.push(
+    "novalidate suppresses interactive validation; Enter cannot navigate; native validity remains available",
+  );
   await page.route("**/*.js", (route) => route.abort());
   await page.reload();
   assert.equal(await page.locator("html").getAttribute("data-theme"), "night");
@@ -132,6 +163,28 @@ try {
   );
   report.checks.push(
     "saved theme and metadata apply before application JavaScript loads",
+  );
+  for (const value of ["1", "15002", "2e2", "１２３"]) {
+    await input.fill(value);
+    assert.equal(
+      await input.evaluate((e) => e.validity.valid),
+      value === "１２３",
+    );
+    assert.equal(await input.evaluate((e) => e.validity.customError), false);
+    assert.equal(
+      await page.locator("#rank-hint").isVisible(),
+      value !== "１２３",
+    );
+  }
+  await input.fill("1");
+  assert.equal(await page.locator("#rank-hint").isVisible(), true);
+  assert.equal(await input.evaluate((e) => e === document.activeElement), true);
+  const png = await page.screenshot({ path: ".cache/qa/inline-invalid.png" });
+  assert.equal(png.subarray(0, 8).toString("hex"), "89504e470d0a1a0a");
+  assert.equal(png.readUInt32BE(16), 375);
+  assert.equal(png.readUInt32BE(20), 700);
+  report.checks.push(
+    "HTML/CSS validates and shows the inline hint without application JavaScript",
   );
   await writeFile(".cache/qa/fallbacks.json", JSON.stringify(report, null, 2));
   console.log(report);

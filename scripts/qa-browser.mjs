@@ -161,6 +161,8 @@ try {
           );
           let maxDelta = 0;
           for (let i = 0; i < old.elements.length; i++) {
+            // Native validation replaces the old inline warning.
+            if (name === "warning" && i === 7) continue;
             assert.equal(
               Boolean(old.elements[i]),
               Boolean(current.elements[i]),
@@ -200,12 +202,25 @@ try {
   await page.evaluate(() => localStorage.clear());
   await page.reload();
   const input = page.locator("#rank");
+  assert.equal(await page.locator("#rank-hint").isVisible(), false);
+  assert.equal(
+    await input.evaluate((el) => el.matches(":user-invalid")),
+    false,
+  );
   for (const value of [
     "",
     "1",
     "2",
     "15001",
     "15002",
+    "９９９９",
+    "１００００",
+    "１４９９９",
+    "１５０００",
+    "１５００１",
+    "１５００２",
+    "００２",
+    "000",
     "123",
     "１２３",
     "１",
@@ -218,20 +233,37 @@ try {
     "1２3",
   ]) {
     await input.fill(value);
+    assert.equal(
+      await page.locator("#rank-hint").isVisible(),
+      Boolean(value) && !(await input.evaluate((el) => el.validity.valid)),
+    );
+    assert.equal(
+      await input.evaluate((el) => el === document.activeElement),
+      true,
+    );
     await page.waitForTimeout(240);
     const valid =
       /^[0-9０-９]+$/.test(value) &&
       Number(value.normalize("NFKC")) >= 2 &&
       Number(value.normalize("NFKC")) <= 15001;
-    assert.equal(
-      await page.locator("#rank-error").count(),
-      value && !valid ? 1 : 0,
-      value,
-    );
+    assert.equal(await page.locator("#result [role=alert]").count(), 0);
+    assert.equal((await page.locator(".rank-step").count()) > 0, valid);
     assert.equal(await input.inputValue(), value);
+    const validity = await input.evaluate((el) => ({
+      valid: el.validity.valid,
+      customError: el.validity.customError,
+      valueMissing: el.validity.valueMissing,
+      matchesInvalid: el.matches(":invalid"),
+      message: el.validationMessage,
+    }));
+    assert.equal(validity.valid, valid);
+    assert.equal(validity.matchesInvalid, !valid);
+    assert.equal(validity.customError, false);
+    assert.equal(validity.valueMissing, value === "");
+    assert.equal(validity.message.length > 0, !valid);
   }
   report.functional.push(
-    "empty, bounds, ASCII/full-width/mixed digits, decimal, exponent, sign, whitespace, nonnumeric",
+    "HTML-only validity: empty, bounds, ASCII/full-width/mixed digits, decimal, exponent, sign, whitespace, nonnumeric",
   );
   const select = page.locator("select:visible");
   for (const width of [320, 359, 360, 375, 768, 1280]) {
@@ -283,17 +315,31 @@ try {
       validBorder,
     );
     await input.fill("1");
-    await page.waitForTimeout(240);
+    assert.equal(await page.locator("#rank-hint").isVisible(), true);
     assert.notEqual(
       await input.evaluate((el) => getComputedStyle(el).borderColor),
       validBorder,
     );
   }
   report.functional.push(
-    "valid input keeps primary border/focus in both themes; invalid input has error color",
+    "valid input keeps primary border/focus; nonempty invalid input immediately shows error color and hint without blur or Enter",
   );
   await input.fill("123");
   await page.waitForTimeout(240);
+  await input.fill("124");
+  await page.waitForTimeout(100);
+  assert.equal(
+    await page.locator(".rank-number").first().textContent(),
+    "123位",
+  );
+  await page.waitForTimeout(140);
+  assert.equal(
+    await page.locator(".rank-number").first().textContent(),
+    "124位",
+  );
+  await input.fill("123");
+  await page.waitForTimeout(240);
+  report.functional.push("rank results still wait for the 200ms debounce");
   await input.evaluate((el) => {
     el.dispatchEvent(
       new CompositionEvent("compositionstart", { bubbles: true }),
@@ -315,7 +361,8 @@ try {
     ),
   );
   await page.waitForTimeout(240);
-  assert.equal(await page.locator("#rank-error").count(), 1);
+  assert.equal(await page.locator(".rank-step").count(), 0);
+  assert.equal(await input.evaluate((el) => el.validity.patternMismatch), true);
   await input.fill("123");
   await page.waitForTimeout(240);
   await input.evaluate((el) => {
