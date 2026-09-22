@@ -29,6 +29,7 @@ try {
   const errors: string[] = [];
   page.on("pageerror", (error) => errors.push(error.message));
   await page.goto(url);
+  assert.equal(await page.locator("noscript").isVisible(), false);
   await page.locator("#rank").fill("15001");
   await page.locator(".rank-step").first().waitFor();
 
@@ -281,6 +282,136 @@ try {
   );
   console.log(
     `PASS ordinary links without Popover (${engine} ${browser.version()})`,
+  );
+
+  const noScript = await browser.newPage({
+    javaScriptEnabled: false,
+    viewport: { width: 320, height: 800 },
+  });
+  await noScript.goto(url);
+  assert(await noScript.locator("noscript p").isVisible());
+  assert.match(
+    await noScript.locator("noscript p").innerText(),
+    /JavaScriptが無効.*再読み込み/,
+  );
+  assert(
+    await noScript.evaluate(
+      () => document.documentElement.scrollWidth <= innerWidth,
+    ),
+  );
+  const notice = await noScript.screenshot({
+    path: resolve(output, "no-script.png"),
+  });
+  assert.equal(notice.subarray(1, 4).toString(), "PNG");
+  assert.equal(notice.readUInt32BE(16), 320);
+  assert.equal(notice.readUInt32BE(20), 800);
+  console.log("PASS JavaScript-disabled notice (hidden when enabled)");
+
+  for (const mode of [
+    "reduced",
+    "unsupported-motion",
+    "unsupported-selectors",
+    "native-select",
+  ]) {
+    const plain = await browser.newPage({
+      reducedMotion: mode === "reduced" ? "reduce" : "no-preference",
+      viewport: { width: 320, height: 800 },
+    });
+    if (mode !== "reduced") {
+      // Simulate rejected CSS feature queries; overriding CSS.supports() alone
+      // would not affect the stylesheet's @supports conditions.
+      await plain.route("**/*.css", async (route) => {
+        const response = await route.fetch();
+        const css = (await response.text()).replace(
+          /@supports[^{}]+/g,
+          (condition) => {
+            if (mode === "native-select")
+              return condition.replace(
+                /appearance\s*:\s*base-select/g,
+                "unsupported-feature: none",
+              );
+            const missing =
+              mode === "unsupported-selectors"
+                ? /selector\([^)]*:(?:popover-)?open\)/
+                : /interpolate-size|transition-behavior|sibling-index|view-timeline/;
+            return missing.test(condition)
+              ? "@supports (unsupported-feature: none)"
+              : condition;
+          },
+        );
+        await route.fulfill({ response, body: css });
+      });
+    }
+    await plain.goto(url);
+    await plain.locator("#rank").fill("15001");
+    await plain.locator(".rank-step").first().waitFor();
+    await plain.locator("select").selectOption("match-heavy");
+    assert.equal(await plain.locator(".rank-step").count(), 139);
+    if (mode === "reduced" || mode === "unsupported-motion") {
+      assert(
+        await plain.locator(".rank-detail").evaluateAll((rows) =>
+          rows.every((row) => {
+            const style = getComputedStyle(row);
+            return (
+              style.opacity === "1" &&
+              style.filter === "none" &&
+              style.animationName === "none" &&
+              style.transitionDuration === "0s"
+            );
+          }),
+        ),
+        mode,
+      );
+    }
+    await plain.locator("#menu-trigger").click();
+    await plain.locator("#header-menu").waitFor({ state: "visible" });
+    if (mode !== "native-select") {
+      assert.deepEqual(
+        await plain.locator("#header-menu").evaluate((el) => {
+          const style = getComputedStyle(el);
+          return [style.opacity, style.transitionDuration];
+        }),
+        ["1", "0s"],
+        mode,
+      );
+    }
+    await plain.keyboard.press("Escape");
+    await plain.locator("#header-menu").waitFor({ state: "hidden" });
+    if (mode === "native-select") {
+      assert.notEqual(
+        await plain
+          .locator("select")
+          .evaluate((el) => getComputedStyle(el).appearance),
+        "base-select",
+      );
+      assert.match(
+        (await plain.locator("select option").allTextContents()).join("\n"),
+        /登頂[\s\S]*2位狙い[\s\S]*最多対戦/,
+      );
+      await plain.locator("select").selectOption("target-second");
+      assert.equal(
+        await plain.locator(".rank-number").last().innerText(),
+        "2位",
+      );
+    } else if (
+      await plain.evaluate(() => CSS.supports("appearance", "base-select"))
+    ) {
+      await plain.locator("select").focus();
+      await plain.keyboard.press("Space");
+      assert.deepEqual(
+        await plain.locator("select").evaluate((el) => {
+          const style = getComputedStyle(el, "::picker(select)");
+          return [style.opacity, style.transitionDuration];
+        }),
+        ["1", "0s"],
+        mode,
+      );
+      await plain.keyboard.press("Escape");
+    }
+    await plain.close();
+  }
+  console.log(
+    "PASS reduced motion, unsupported decoration, and native select fallbacks",
   );
 } finally {
   await browser.close();

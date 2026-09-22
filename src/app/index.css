@@ -70,6 +70,15 @@ h1 {
   line-height: 1.25;
   text-align: center;
 }
+.script-notice {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  max-width: 36rem;
+  margin: 0 auto 1rem;
+  color: var(--error);
+  font-size: 0.875rem;
+}
 .rank-card {
   max-width: 36rem;
   margin-inline: auto;
@@ -191,7 +200,9 @@ select {
     color: var(--text);
   }
   @media (prefers-reduced-motion: no-preference) {
-    @supports (transition-behavior: allow-discrete) and (overlay: auto) {
+    @supports (transition-behavior: allow-discrete) and
+      (overlay: auto) and
+      selector(select:open) {
       select::picker(select) {
         opacity: 0;
         transform: translateY(-0.25rem);
@@ -359,7 +370,9 @@ option:focus-visible {
   width: auto;
 }
 @media (prefers-reduced-motion: no-preference) {
-  @supports (transition-behavior: allow-discrete) and (overlay: auto) {
+  @supports (transition-behavior: allow-discrete) and
+    (overlay: auto) and
+    selector(:popover-open) {
     #header-menu[popover] {
       opacity: 0;
       transform: translateY(-0.25rem);
