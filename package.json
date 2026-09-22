@@ -13,6 +13,7 @@
     "lint": "biome lint .",
     "format": "biome format --write .",
     "test": "bun test",
+    "test:browser": "bun tests/browserRegression.ts",
     "preview": "bun scripts/qa-server.ts"
   },
   "devDependencies": {

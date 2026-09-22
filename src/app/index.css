@@ -73,7 +73,7 @@ h1 {
 .rank-card {
   max-width: 36rem;
   margin-inline: auto;
-  padding: 1.5rem;
+  padding: clamp(0.75rem, 4vw, 1.5rem);
   border: 1px solid var(--muted);
   border-radius: 1rem;
   corner-shape: squircle;
@@ -82,11 +82,15 @@ h1 {
 .rank-fields,
 .rank-entry {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   gap: 0.5rem;
 }
+.rank-fields {
+  justify-content: flex-end;
+}
 .rank-entry {
-  flex: 1;
+  flex: 1 1 8.5rem;
   min-width: 0;
 }
 .rank-entry label {
@@ -102,6 +106,7 @@ select {
   padding-inline: 0.5rem;
 }
 #rank {
+  flex: 1 1 4rem;
   min-width: 0;
   width: 100%;
 }
@@ -152,6 +157,7 @@ form:has(#rank:invalid:not(:placeholder-shown)) #rank-hint {
 }
 select {
   width: 7.375rem;
+  max-width: 100%;
   flex-shrink: 0;
   white-space: nowrap;
 }
@@ -229,16 +235,17 @@ select {
       width: 3.625rem;
     }
     select > button .strategy-label {
-      display: none;
+      position: absolute;
+      clip-path: inset(50%);
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+      white-space: nowrap;
     }
   }
   @supports not (appearance: base-select) {
-    .rank-fields {
-      flex-direction: column;
-      align-items: stretch;
-    }
-    select {
-      align-self: flex-end;
+    .rank-entry {
+      flex-basis: 100%;
     }
   }
 }
@@ -260,6 +267,9 @@ select {
   border-radius: 50%;
   background: transparent;
   cursor: pointer;
+}
+.icon-button[hidden] {
+  display: none;
 }
 .icon-button:focus-visible,
 .theme-toggle:has(input:focus-visible),
@@ -322,6 +332,9 @@ option:focus-visible {
   left: anchor(right);
   translate: -100% 0;
   width: 10rem;
+  max-width: 100%;
+  max-height: 100%;
+  overflow: auto;
   padding: 0.5rem;
   border: 1px solid var(--muted);
   border-radius: 0.5rem;
@@ -387,7 +400,7 @@ option:focus-visible {
 }
 .rank-step {
   display: grid;
-  grid-template-columns: 2.5rem 1fr;
+  grid-template-columns: 2.5rem minmax(0, 1fr);
   align-items: center;
   gap: 0.5rem;
   min-height: 4rem;
@@ -473,26 +486,49 @@ option:focus-visible {
   background: var(--secondary);
   color: var(--on-secondary);
 }
-.rank-detail,
-.rank-range {
+.rank-detail {
   display: flex;
+  flex-wrap: wrap;
+  min-width: 0;
   align-items: baseline;
   margin-inline-start: 0.25rem;
 }
 .rank-number {
-  min-width: 4.5rem;
+  min-width: min(4.5rem, 100%);
   font-size: 1.125rem;
   line-height: 1.75rem;
   font-weight: 600;
   text-align: right;
 }
 .rank-range {
+  max-width: 100%;
+  margin-inline-start: 0.25rem;
   color: var(--muted);
 }
 .range-arrow {
+  display: inline-block;
   width: 0.75rem;
   height: 0.75rem;
   margin-inline: 0.25rem;
+}
+
+@media print {
+  .rank-step {
+    break-inside: avoid;
+  }
+  .rank-step::before,
+  .rank-step::after,
+  .rank-step > .rank-detail {
+    animation: none;
+    transition: none;
+    filter: none;
+    transform: none;
+    opacity: 1;
+  }
+  .rank-step::after,
+  .rank-step > .rank-detail {
+    translate: none;
+  }
 }
 
 /* Rendering errors */

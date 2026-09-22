@@ -7,10 +7,12 @@ if ("showPopover" in HTMLElement.prototype) {
   if (!CSS.supports("position-anchor", "--header-menu-anchor")) {
     const position = () => {
       const rect = trigger.getBoundingClientRect();
-      menu.style.top = `${rect.bottom}px`;
-      menu.style.left = `${Math.max(0, Math.min(rect.right - 160, innerWidth - 160))}px`;
+      const { width, height } = menu.getBoundingClientRect();
+      const viewport = document.documentElement;
+      menu.style.top = `${Math.max(0, Math.min(rect.bottom, viewport.clientHeight - height))}px`;
+      menu.style.left = `${Math.max(0, Math.min(rect.right - width, viewport.clientWidth - width))}px`;
     };
-    menu.addEventListener("beforetoggle", (event) => {
+    menu.addEventListener("toggle", (event) => {
       if ((event as ToggleEvent).newState === "open") {
         position();
         window.addEventListener("resize", position);
