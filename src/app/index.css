@@ -59,6 +59,19 @@ select {
 svg {
   display: block;
 }
+.menu-icon,
+.strategy-icon,
+.error-icon {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.strategy-icon {
+  width: 1.125rem;
+  height: 1.125rem;
+}
 .page {
   max-width: 48rem;
   margin-inline: auto;
@@ -622,6 +635,7 @@ option:focus-visible {
   width: 0.75rem;
   height: 0.75rem;
   margin-inline: 0.25rem;
+  fill: currentColor;
 }
 
 @media print {
@@ -661,7 +675,6 @@ option:focus-visible {
   flex-shrink: 0;
   width: 1.5rem;
   height: 1.5rem;
-  stroke: currentColor;
 }
 #rank-hint .error-icon {
   width: 1rem;

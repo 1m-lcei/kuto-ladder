@@ -16,7 +16,8 @@ TypeScript; Bun, Vite, TypeScript 7 and Biome. No runtime dependencies.
 
 | Responsibility | Location |
 |---|---|
-| Static form, SVGs, row/alert templates, early theme | `index.html` |
+| Static form, row/alert templates, early theme | `index.html` |
+| Shared SVG icon geometry, referenced with use | `public/icons.svg` |
 | Debounce, IME, strategy, result rendering | `src/app/main.ts` |
 | Theme tokens and responsive/step styling | `src/app/index.css` |
 | System/Light/Dark preference and browser metadata | `src/app/theme.ts` |
@@ -53,7 +54,7 @@ TypeScript; Bun, Vite, TypeScript 7 and Biome. No runtime dependencies.
 - Unchanged DOM rows are reused by a content/tone key to meet throttled timing.
   Keep the input element and its focus intact. Exceptions go to the result alert.
 - Use one native strategy select with selectedcontent. At <360px, customizable
-  select displays emoji-only; unsupported browsers use two form rows and retain
+  select displays icons only; unsupported browsers use two form rows and retain
   Japanese labels. At >=360px, both render Japanese labels in a single form row.
   The closed select keeps a stable width across strategies and centers its label;
   changing selection must not resize the rank input or wrap the selected label.
@@ -67,6 +68,9 @@ TypeScript; Bun, Vite, TypeScript 7 and Biome. No runtime dependencies.
 - Storage key `kuto-ladder-config`, CONFIG_VERSION=1; product version does not
   reset settings. Validate stored theme/strategy; unavailable storage is nonfatal.
 - All deployed assets resolve under `/kuto-ladder/`. No rank-data fetches.
+- SVG icons use the same-origin `public/icons.svg` sprite via `%BASE_URL%`.
+  Keep only symbol IDs, viewBox and geometry in the sprite; style the SVG hosts
+  in CSS. Strategy titles in HTML preserve the native-select emoji fallback.
 - Popover absent: hide trigger and expose ordinary settings controls. Anchor absent: position
   on opening and follow resize/scroll. Do not add a large polyfill.
 - About uses a native modal dialog with backdrop/Escape dismissal and no close

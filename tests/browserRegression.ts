@@ -3,6 +3,7 @@
 import assert from "node:assert/strict";
 import { mkdir, writeFile } from "node:fs/promises";
 import { resolve } from "node:path";
+import type { Page } from "playwright";
 
 process.env.PLAYWRIGHT_BROWSERS_PATH ??= resolve(".cache/browsers");
 const temporary = resolve(".cache/qa/tmp");
@@ -24,6 +25,24 @@ const output = resolve(".cache/qa/regressions", engine);
 await mkdir(output, { recursive: true });
 const url = "http://localhost:4173/kuto-ladder/";
 
+async function expectIcons(page: Page, selector: string) {
+  const uses = `:is(${selector}) use`;
+  assert((await page.locator(uses).count()) > 0);
+  await page.waitForFunction(
+    (selector) =>
+      [...document.querySelectorAll<SVGUseElement>(selector)].every((use) => {
+        const box = use.getBBox();
+        return (
+          box.width > 0 &&
+          box.height > 0 &&
+          new URL(use.href.baseVal, location.href).pathname ===
+            "/kuto-ladder/icons.svg"
+        );
+      }),
+    uses,
+  );
+}
+
 try {
   const page = await browser.newPage({
     reducedMotion: "reduce",
@@ -35,6 +54,10 @@ try {
   assert.equal(await page.locator("noscript").isVisible(), false);
   await page.locator("#rank").fill("15001");
   await page.locator(".rank-step").first().waitFor();
+  const sprite = await page.request.get(new URL("icons.svg", url).href);
+  assert(sprite.ok());
+  assert.match(sprite.headers()["content-type"]!, /image\/svg\+xml/);
+  await expectIcons(page, ".sun, .menu-icon, .rank-range");
 
   // Reflow, stable controls, and selected names at the 360px boundary.
   for (const dark of [false, true]) {
@@ -115,6 +138,20 @@ try {
               new RegExp(label),
               name,
             );
+            await expectIcons(page, "select > button");
+          } else {
+            const text = await page
+              .locator(`option[value="${strategy}"]`)
+              .textContent();
+            assert(
+              text?.includes(
+                strategy === "efficient"
+                  ? "🥇"
+                  : strategy === "target-second"
+                    ? "🥈"
+                    : "⚔",
+              ),
+            );
           }
         }
         if (width === 375) {
@@ -167,6 +204,7 @@ try {
 
   // Printing must reveal offscreen rows even when motion is enabled.
   await page.emulateMedia({ media: "print", reducedMotion: "no-preference" });
+  await expectIcons(page, ".rank-range");
   assert.equal(await page.locator(".rank-step").count(), 139);
   assert.equal(await page.locator(".rank-number").last().innerText(), "1位");
   assert(
@@ -219,6 +257,7 @@ try {
   });
   await page.locator("#rank").fill("100");
   await page.locator("#result [role=alert]").waitFor();
+  await expectIcons(page, ".result-alert");
   assert.match(
     await page.locator("#result").innerText(),
     /test rendering failure/,
@@ -326,6 +365,7 @@ try {
       await settings.locator(".theme-toggle .sun").isVisible(),
       rendered === "emerald",
     );
+    await expectIcons(settings, rendered === "night" ? ".moon" : ".sun");
     const action =
       rendered === "night"
         ? "ライトモードに切り替える"
@@ -561,7 +601,7 @@ try {
         assert.equal(await settings.locator("#header-menu").isVisible(), false);
         assert.match(
           await dialog.innerText(),
-          /このWebサイトは、「ブルーアーカイブ」非公式ファンサイトです。/,
+          /「ブルーアーカイブ」非公式ファンサイトです。/,
         );
         assert.equal(await dialog.locator("[style], button, form").count(), 0);
         assert.equal(
@@ -571,6 +611,7 @@ try {
           1,
         );
         assert.equal(await dialog.locator(".about-links a").count(), 2);
+        await expectIcons(settings, ".about-links");
         const layout = await dialog.evaluate((el) => {
           const rect = el.getBoundingClientRect();
           const icon = el.querySelector<HTMLImageElement>("img")!;
@@ -686,6 +727,7 @@ try {
   });
   await noScript.goto(url);
   assert(await noScript.locator("noscript p").isVisible());
+  await expectIcons(noScript, "noscript");
   assert.match(
     await noScript.locator("noscript p").innerText(),
     /JavaScriptが無効.*再読み込み/,
