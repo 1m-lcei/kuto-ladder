@@ -3,9 +3,11 @@ import type { PathStrategy } from "../types/types";
 const CONFIG_KEY = "kuto-ladder-config";
 const CONFIG_VERSION = 1;
 
+export type ThemePreference = "system" | "light" | "dark";
+
 export interface AppConfig {
   version: number;
-  theme?: "emerald" | "night";
+  theme?: ThemePreference;
   strategy?: PathStrategy;
 }
 
@@ -18,9 +20,15 @@ export function loadConfig(): AppConfig {
         return {
           version: CONFIG_VERSION,
           theme:
-            parsed.theme === "emerald" || parsed.theme === "night"
+            parsed.theme === "system" ||
+            parsed.theme === "light" ||
+            parsed.theme === "dark"
               ? parsed.theme
-              : undefined,
+              : parsed.theme === "emerald"
+                ? "light"
+                : parsed.theme === "night"
+                  ? "dark"
+                  : undefined,
           strategy:
             parsed.strategy === "efficient" ||
             parsed.strategy === "match-heavy" ||

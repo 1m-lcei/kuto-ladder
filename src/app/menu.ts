@@ -1,6 +1,28 @@
 // biome-ignore-all lint/style/noNonNullAssertion: Elements are owned by the static HTML/templates.
 const trigger = document.querySelector<HTMLButtonElement>("#menu-trigger")!;
 const menu = document.querySelector<HTMLElement>("#header-menu")!;
+const aboutTrigger =
+  document.querySelector<HTMLButtonElement>("#about-trigger")!;
+const about = document.querySelector<HTMLDialogElement>("#about-dialog")!;
+
+aboutTrigger.addEventListener("click", () => about.showModal());
+about.addEventListener("close", () => {
+  (trigger.hidden ? aboutTrigger : trigger).focus();
+});
+if (!("closedBy" in HTMLDialogElement.prototype)) {
+  about.addEventListener("click", (event) => {
+    if (event.target !== about) return;
+    const rect = about.getBoundingClientRect();
+    if (
+      event.clientX < rect.left ||
+      event.clientX > rect.right ||
+      event.clientY < rect.top ||
+      event.clientY > rect.bottom
+    ) {
+      about.close();
+    }
+  });
+}
 
 if ("showPopover" in HTMLElement.prototype) {
   trigger.hidden = false;

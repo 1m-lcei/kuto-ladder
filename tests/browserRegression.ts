@@ -25,7 +25,10 @@ await mkdir(output, { recursive: true });
 const url = "http://localhost:4173/kuto-ladder/";
 
 try {
-  const page = await browser.newPage({ reducedMotion: "reduce" });
+  const page = await browser.newPage({
+    reducedMotion: "reduce",
+    colorScheme: "light",
+  });
   const errors: string[] = [];
   page.on("pageerror", (error) => errors.push(error.message));
   await page.goto(url);
@@ -35,7 +38,11 @@ try {
 
   // Reflow, stable controls, and selected names at the 360px boundary.
   for (const dark of [false, true]) {
-    await page.locator("#theme-toggle").setChecked(dark);
+    await page.locator("#menu-trigger").click();
+    await page
+      .locator(`input[name="theme"][value="${dark ? "dark" : "light"}"]`)
+      .check();
+    await page.keyboard.press("Escape");
     for (const fontSize of ["100%", "200%"]) {
       await page.evaluate((size) => {
         document.documentElement.style.fontSize = size;
@@ -129,7 +136,9 @@ try {
   await page.evaluate(() => {
     document.documentElement.style.fontSize = "";
   });
-  await page.locator("#theme-toggle").setChecked(false);
+  await page.locator("#menu-trigger").click();
+  await page.locator('input[name="theme"][value="light"]').check();
+  await page.keyboard.press("Escape");
   await page.locator("#rank").focus();
   await page.keyboard.press("Tab");
   assert(
@@ -271,17 +280,365 @@ try {
   });
   await ordinary.goto(url);
   assert.equal(await ordinary.locator("#menu-trigger").isVisible(), false);
-  assert.equal(await ordinary.locator("#header-menu a:visible").count(), 2);
+  assert.equal(
+    await ordinary.locator('#header-menu input[type="radio"]:visible').count(),
+    3,
+  );
+  assert(await ordinary.locator("#about-trigger").isVisible());
   await ordinary.locator("#theme-toggle").focus();
   await ordinary.keyboard.press("Tab");
   assert(
     await ordinary
-      .locator("#header-menu a")
-      .first()
+      .locator("#header-menu input:checked")
       .evaluate((el) => el === document.activeElement),
   );
   console.log(
-    `PASS ordinary links without Popover (${engine} ${browser.version()})`,
+    `PASS ordinary settings without Popover (${engine} ${browser.version()})`,
+  );
+  await ordinary.locator("#about-trigger").click();
+  await ordinary.locator("#about-dialog").waitFor({ state: "visible" });
+  await ordinary.keyboard.press("Escape");
+  assert(
+    await ordinary
+      .locator("#about-trigger")
+      .evaluate((el) => el === document.activeElement),
+  );
+
+  const settings = await browser.newPage({
+    colorScheme: "light",
+    reducedMotion: "reduce",
+  });
+  await settings.goto(url);
+  const expectTheme = async (preference: string, rendered: string) => {
+    await settings.waitForFunction(
+      (theme) => document.documentElement.dataset.theme === theme,
+      rendered,
+    );
+    assert.equal(
+      await settings.locator('input[name="theme"]:checked').inputValue(),
+      preference,
+    );
+    assert.equal(
+      await settings.locator(".theme-toggle .moon").isVisible(),
+      rendered === "night",
+    );
+    assert.equal(
+      await settings.locator(".theme-toggle .sun").isVisible(),
+      rendered === "emerald",
+    );
+    assert.deepEqual(
+      await settings
+        .locator('meta[name="theme-color"]')
+        .evaluateAll((metas) =>
+          metas.map((meta) => meta.getAttribute("content")),
+        ),
+      Array(2).fill(rendered === "night" ? "#0f172a" : "#ffffff"),
+    );
+  };
+  await expectTheme("system", "emerald");
+  await settings.locator("#theme-toggle").click();
+  await expectTheme("dark", "night");
+  await settings.emulateMedia({ colorScheme: "dark" });
+  await expectTheme("dark", "night");
+  await settings.locator("#theme-toggle").click();
+  await expectTheme("system", "night");
+  await settings.emulateMedia({ colorScheme: "light" });
+  await expectTheme("system", "emerald");
+  await settings.locator("#theme-toggle").click();
+  await settings.reload();
+  await expectTheme("dark", "night");
+  for (const [stored, preference, rendered] of [
+    ["emerald", "light", "emerald"],
+    ["night", "dark", "night"],
+    ["light", "light", "emerald"],
+    ["dark", "dark", "night"],
+    ["system", "system", "emerald"],
+    ["invalid", "system", "emerald"],
+  ]) {
+    await settings.evaluate(
+      (theme) =>
+        localStorage.setItem(
+          "kuto-ladder-config",
+          JSON.stringify({ version: 1, theme, strategy: "match-heavy" }),
+        ),
+      stored,
+    );
+    await settings.reload();
+    await expectTheme(preference, rendered);
+  }
+  for (const preference of ["light", "dark", "system"]) {
+    await settings.locator("#menu-trigger").click();
+    await settings
+      .locator(`input[name="theme"][value="${preference}"]`)
+      .check();
+    await settings.keyboard.press("Escape");
+    await settings.emulateMedia({ colorScheme: "dark" });
+    await expectTheme(preference, preference === "light" ? "emerald" : "night");
+    const saved = await settings.evaluate(() =>
+      JSON.parse(localStorage.getItem("kuto-ladder-config")!),
+    );
+    assert.deepEqual(saved, {
+      version: 1,
+      theme: preference,
+      strategy: "match-heavy",
+    });
+    await settings.reload();
+    await expectTheme(preference, preference === "light" ? "emerald" : "night");
+  }
+  await settings.locator("#theme-toggle").click();
+  await expectTheme("light", "emerald");
+  await settings.locator("#theme-toggle").click();
+  await expectTheme("system", "night");
+  await settings.locator("#menu-trigger").click();
+  const themeGroup = settings.getByRole("group", {
+    name: "テーマ",
+    exact: true,
+  });
+  await themeGroup
+    .getByRole("radio", { name: "システム", exact: true })
+    .focus();
+  for (const [key, preference, rendered] of [
+    ["ArrowRight", "light", "emerald"],
+    ["ArrowRight", "dark", "night"],
+    ["ArrowLeft", "light", "emerald"],
+    ["ArrowLeft", "system", "night"],
+  ]) {
+    await settings.keyboard.press(key!);
+    await expectTheme(preference!, rendered!);
+    assert.equal(
+      await themeGroup.locator("label:has(:focus-visible)").count(),
+      1,
+    );
+  }
+  await settings.keyboard.press("Tab");
+  assert(
+    await settings
+      .locator("#about-trigger")
+      .evaluate((el) => el === document.activeElement),
+  );
+  await settings.emulateMedia({ forcedColors: "active" });
+  assert(
+    await themeGroup.evaluate((el) => {
+      const selected = el.querySelector("label:has(:checked)")!;
+      const unselected = el.querySelector("label:not(:has(:checked))")!;
+      return (
+        getComputedStyle(selected).backgroundColor !==
+        getComputedStyle(unselected).backgroundColor
+      );
+    }),
+  );
+  await settings.emulateMedia({ forcedColors: "none" });
+  await settings.keyboard.press("Escape");
+  console.log(
+    "PASS System/Light/Dark, keyboard selection, forced colors, OS changes, toggle, persistence and legacy settings",
+  );
+
+  // The inline bootstrap must also understand new and legacy saved preferences.
+  const early = await browser.newPage({ colorScheme: "dark" });
+  await early.route("**/*.js", (route) => route.abort());
+  await early.goto(url);
+  for (const [theme, rendered] of [
+    ["light", "emerald"],
+    ["dark", "night"],
+    ["system", "night"],
+    ["emerald", "emerald"],
+    ["night", "night"],
+  ]) {
+    await early.evaluate(
+      (theme) =>
+        localStorage.setItem(
+          "kuto-ladder-config",
+          JSON.stringify({ version: 1, theme }),
+        ),
+      theme,
+    );
+    await early.reload();
+    assert.equal(
+      await early.locator("html").getAttribute("data-theme"),
+      rendered,
+    );
+  }
+  await early.close();
+
+  for (const dark of [false, true]) {
+    for (const width of [320, 359, 360, 375, 768]) {
+      for (const size of ["100%", "200%"]) {
+        await settings.setViewportSize({ width, height: 800 });
+        await settings.evaluate((size) => {
+          document.documentElement.style.fontSize = size;
+        }, size);
+        await settings.locator("#menu-trigger").click();
+        await settings
+          .locator(`input[name="theme"][value="${dark ? "dark" : "light"}"]`)
+          .check();
+        const segments = await settings
+          .locator(".theme-options")
+          .evaluate((el) => {
+            const labels = [...el.querySelectorAll("label")];
+            const menu = document.querySelector("#header-menu")!;
+            const bounds = menu.getBoundingClientRect();
+            return {
+              fits:
+                bounds.left >= 0 &&
+                bounds.right <= document.documentElement.clientWidth + 1 &&
+                menu.scrollWidth <= menu.clientWidth,
+              boxes: labels.map((label) =>
+                label.getBoundingClientRect().toJSON(),
+              ),
+              readable: labels.every(
+                (label) => label.scrollWidth <= label.clientWidth,
+              ),
+            };
+          });
+        assert(
+          segments.fits && segments.readable,
+          JSON.stringify({ dark, width, size, segments }),
+        );
+        for (const box of segments.boxes) {
+          assert(Math.abs(box.top - segments.boxes[0]!.top) < 1);
+          assert(Math.abs(box.width - segments.boxes[0]!.width) < 1);
+          assert(box.height >= 32);
+        }
+        if (width === 375) {
+          const png = await settings.screenshot({
+            path: resolve(
+              output,
+              `menu-${dark ? "night" : "emerald"}-${size}.png`,
+            ),
+          });
+          assert.equal(png.subarray(1, 4).toString(), "PNG");
+          assert.equal(png.readUInt32BE(16), width);
+          assert.equal(png.readUInt32BE(20), 800);
+        }
+        assert.equal(await settings.locator("#header-menu a").count(), 0);
+        await settings.locator("#about-trigger").click();
+        const dialog = settings.locator("#about-dialog");
+        await dialog.waitFor({ state: "visible" });
+        await settings.waitForFunction(
+          () =>
+            document.querySelector<HTMLImageElement>(".about-icon")!.complete,
+        );
+        assert(await dialog.evaluate((el) => el.matches(":modal")));
+        assert.equal(await settings.locator("#header-menu").isVisible(), false);
+        assert.match(
+          await dialog.innerText(),
+          /このWebサイトは、「ブルーアーカイブ」非公式ファンサイトです。/,
+        );
+        assert.equal(await dialog.locator("[style], button, form").count(), 0);
+        assert.equal(
+          await settings
+            .getByRole("dialog", { name: "このサイトについて" })
+            .count(),
+          1,
+        );
+        assert.equal(await dialog.locator(".about-links a").count(), 2);
+        const layout = await dialog.evaluate((el) => {
+          const rect = el.getBoundingClientRect();
+          const icon = el.querySelector<HTMLImageElement>("img")!;
+          const image = icon.getBoundingClientRect();
+          const description = el.querySelector(".about-description")!;
+          const divider = el.querySelector("hr")!.getBoundingClientRect();
+          const links = el
+            .querySelector(".about-links")!
+            .getBoundingClientRect();
+          return {
+            width: rect.width,
+            right: rect.right,
+            left: rect.left,
+            overflow: el.scrollWidth > el.clientWidth,
+            imageLoaded: icon.naturalWidth > 0,
+            iconFirst: icon.parentElement!.firstElementChild === icon,
+            center: Math.abs(
+              (image.left + image.right) / 2 - (rect.left + rect.right) / 2,
+            ),
+            imagePath: new URL(icon.src).pathname,
+            descriptionScale:
+              Number.parseFloat(getComputedStyle(description).fontSize) /
+              Number.parseFloat(getComputedStyle(el).fontSize),
+            beforeDivider:
+              divider.top - description.getBoundingClientRect().bottom,
+            afterDivider: links.top - divider.bottom,
+            halfRem:
+              Number.parseFloat(
+                getComputedStyle(document.documentElement).fontSize,
+              ) / 2,
+          };
+        });
+        assert(
+          !layout.overflow && layout.left >= 0 && layout.right <= width,
+          JSON.stringify({ dark, width, size, layout }),
+        );
+        assert(layout.imageLoaded && layout.iconFirst && layout.center < 10);
+        assert.equal(layout.imagePath, "/kuto-ladder/favicon.svg");
+        assert(Math.abs(layout.descriptionScale - 0.8) < 0.01);
+        assert(Math.abs(layout.beforeDivider - layout.halfRem) < 1);
+        assert(Math.abs(layout.afterDivider - layout.halfRem) < 1);
+        if (width === 375) {
+          const png = await settings.screenshot({
+            path: resolve(
+              output,
+              `about-${dark ? "night" : "emerald"}-${size}.png`,
+            ),
+          });
+          assert.equal(png.subarray(1, 4).toString(), "PNG");
+          assert.equal(png.readUInt32BE(16), width);
+          assert.equal(png.readUInt32BE(20), 800);
+        }
+        await dialog.locator(".about-icon").click();
+        assert(await dialog.isVisible());
+        await dialog.locator(".about-links a").last().focus();
+        await settings.keyboard.press("Shift+Tab");
+        assert(
+          await dialog.evaluate((el) => el.contains(document.activeElement)),
+        );
+        if (size === "100%") await settings.keyboard.press("Escape");
+        else await settings.mouse.click(1, 1);
+        await dialog.waitFor({ state: "hidden" });
+        await settings.waitForFunction(
+          () =>
+            document.activeElement === document.querySelector("#menu-trigger"),
+        );
+        assert.equal(settings.url(), url);
+      }
+    }
+  }
+  const noLightDismiss = await browser.newPage();
+  await noLightDismiss.addInitScript(() => {
+    Reflect.deleteProperty(HTMLDialogElement.prototype, "closedBy");
+  });
+  await noLightDismiss.goto(url);
+  // Disable native light dismiss as well as its feature-detection property.
+  await noLightDismiss.locator("#about-dialog").evaluate((el) => {
+    el.setAttribute("closedby", "closerequest");
+  });
+  await noLightDismiss.locator("#menu-trigger").click();
+  await noLightDismiss.locator("#about-trigger").click();
+  const fallbackDialog = noLightDismiss.locator("#about-dialog");
+  await fallbackDialog.locator(".about-icon").click();
+  await fallbackDialog.click({ position: { x: 20, y: 20 } });
+  assert(await fallbackDialog.isVisible());
+  await noLightDismiss.mouse.click(1, 1);
+  await fallbackDialog.waitFor({ state: "hidden" });
+  await noLightDismiss.waitForFunction(
+    () => document.activeElement === document.querySelector("#menu-trigger"),
+  );
+  await noLightDismiss.close();
+  const blocked = await browser.newPage();
+  await blocked.addInitScript(() => {
+    Object.defineProperty(window, "localStorage", {
+      get() {
+        throw new Error("blocked storage");
+      },
+    });
+  });
+  await blocked.goto(url);
+  await blocked.locator("#theme-toggle").click();
+  await blocked.locator("#rank").fill("2");
+  await blocked.locator(".rank-step").first().waitFor();
+  assert.equal(await blocked.locator(".rank-step").count(), 2);
+  await blocked.close();
+  console.log(
+    "PASS early theme, About modal spacing/dismissal/fallback, focus return, asset path and unavailable storage",
   );
 
   const noScript = await browser.newPage({

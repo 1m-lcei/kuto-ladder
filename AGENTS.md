@@ -19,8 +19,8 @@ TypeScript; Bun, Vite, TypeScript 7 and Biome. No runtime dependencies.
 | Static form, SVGs, row/alert templates, early theme | `index.html` |
 | Debounce, IME, strategy, result rendering | `src/app/main.ts` |
 | Theme tokens and responsive/step styling | `src/app/index.css` |
-| System/manual theme and browser metadata | `src/app/theme.ts` |
-| Native Popover and positioning fallback | `src/app/menu.ts` |
+| System/Light/Dark preference and browser metadata | `src/app/theme.ts` |
+| Native Popover, About dialog and positioning fallback | `src/app/menu.ts` |
 | Validated schema 1 localStorage | `src/utils/config.ts` |
 | Rank input and pattern tests | `index.html`, `tests/rankInput.test.ts` |
 | Shared rank rules and maximum | `src/utils/rankRules.ts` |
@@ -57,14 +57,20 @@ TypeScript; Bun, Vite, TypeScript 7 and Biome. No runtime dependencies.
   Japanese labels. At >=360px, both render Japanese labels in a single form row.
   The closed select keeps a stable width across strategies and centers its label;
   changing selection must not resize the rank input or wrap the selected label.
-- Themes: emerald/night. System preference applies until a manual preference is
-  saved. Keep early theme initialization and theme-color metadata synchronized.
+- Theme preferences: system/light/dark, rendered as emerald/night. System follows
+  OS changes; light/dark remain fixed. The sun/moon button switches System to the
+  opposite of the current OS scheme, or any fixed preference back to System.
+  The menu exposes all three choices. Accept legacy emerald/night settings.
+  Keep early theme initialization and theme-color metadata synchronized.
   Valid input keeps the primary border/focus color in both themes; invalid input is red.
 - Storage key `kuto-ladder-config`, CONFIG_VERSION=1; product version does not
   reset settings. Validate stored theme/strategy; unavailable storage is nonfatal.
 - All deployed assets resolve under `/kuto-ladder/`. No rank-data fetches.
-- Popover absent: hide trigger and expose ordinary links. Anchor absent: position
+- Popover absent: hide trigger and expose ordinary settings controls. Anchor absent: position
   on opening and follow resize/scroll. Do not add a large polyfill.
+- About uses a native modal dialog with backdrop/Escape dismissal and no close
+  button; contact/GitHub links live there. Closing it
+  returns focus to the menu trigger (or the About button without Popover support).
 
 ## Commands
 
