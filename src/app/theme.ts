@@ -21,10 +21,9 @@ function applyTheme() {
   if (document.documentElement.dataset.theme !== theme)
     toggle.classList.add("theme-changed");
   window.applyTheme(theme);
-  toggle.ariaLabel =
-    preference === "system"
-      ? "システムと反対のテーマにする"
-      : "システムのテーマに戻す";
+  toggle.ariaLabel = dark
+    ? "ライトモードに切り替える"
+    : "ダークモードに切り替える";
   toggle.title = toggle.ariaLabel;
   for (const choice of choices) choice.checked = choice.value === preference;
 }
@@ -37,9 +36,9 @@ function setPreference(value: ThemePreference) {
 
 system.addEventListener("change", applyTheme);
 toggle.addEventListener("click", () => {
-  setPreference(
-    preference === "system" ? (system.matches ? "light" : "dark") : "system",
-  );
+  const next =
+    document.documentElement.dataset.theme === "night" ? "light" : "dark";
+  setPreference(next === (system.matches ? "dark" : "light") ? "system" : next);
 });
 for (const choice of choices) {
   choice.addEventListener("change", () =>

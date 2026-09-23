@@ -326,6 +326,18 @@ try {
       await settings.locator(".theme-toggle .sun").isVisible(),
       rendered === "emerald",
     );
+    const action =
+      rendered === "night"
+        ? "ライトモードに切り替える"
+        : "ダークモードに切り替える";
+    assert.equal(
+      await settings.locator("#theme-toggle").getAttribute("aria-label"),
+      action,
+    );
+    assert.equal(
+      await settings.locator("#theme-toggle").getAttribute("title"),
+      action,
+    );
     assert.deepEqual(
       await settings
         .locator('meta[name="theme-color"]')
@@ -340,6 +352,8 @@ try {
   await expectTheme("dark", "night");
   await settings.emulateMedia({ colorScheme: "dark" });
   await expectTheme("dark", "night");
+  await settings.locator("#theme-toggle").click();
+  await expectTheme("light", "emerald");
   await settings.locator("#theme-toggle").click();
   await expectTheme("system", "night");
   await settings.emulateMedia({ colorScheme: "light" });
@@ -384,6 +398,31 @@ try {
     });
     await settings.reload();
     await expectTheme(preference, preference === "light" ? "emerald" : "night");
+  }
+  for (const [colorScheme, preference, next, rendered] of [
+    ["light", "system", "dark", "night"],
+    ["light", "light", "dark", "night"],
+    ["light", "dark", "system", "emerald"],
+    ["dark", "system", "light", "emerald"],
+    ["dark", "dark", "light", "emerald"],
+    ["dark", "light", "system", "night"],
+  ] as const) {
+    await settings.emulateMedia({ colorScheme });
+    await settings.locator("#menu-trigger").click();
+    await settings
+      .locator(`input[name="theme"][value="${preference}"]`)
+      .check();
+    await settings.keyboard.press("Escape");
+    await settings.locator("#theme-toggle").click();
+    await expectTheme(next, rendered);
+    assert.equal(
+      await settings.evaluate(
+        () => JSON.parse(localStorage.getItem("kuto-ladder-config")!).theme,
+      ),
+      next,
+    );
+    await settings.reload();
+    await expectTheme(next, rendered);
   }
   await settings.locator("#theme-toggle").click();
   await expectTheme("light", "emerald");

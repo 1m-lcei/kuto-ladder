@@ -58,8 +58,9 @@ TypeScript; Bun, Vite, TypeScript 7 and Biome. No runtime dependencies.
   The closed select keeps a stable width across strategies and centers its label;
   changing selection must not resize the rank input or wrap the selected label.
 - Theme preferences: system/light/dark, rendered as emerald/night. System follows
-  OS changes; light/dark remain fixed. The sun/moon button switches System to the
-  opposite of the current OS scheme, or any fixed preference back to System.
+  OS changes; light/dark remain fixed. The sun/moon button always flips the
+  displayed theme. Save System only when the destination matches the current OS
+  scheme; otherwise save that explicit light/dark preference.
   The menu exposes all three choices. Accept legacy emerald/night settings.
   Keep early theme initialization and theme-color metadata synchronized.
   Valid input keeps the primary border/focus color in both themes; invalid input is red.
