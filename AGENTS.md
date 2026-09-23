@@ -7,29 +7,29 @@ If synchronization reports a lock, confirm the relevant current source on disk.
 Do not create an index if one is absent.
 <!-- CODEGRAPH_END -->
 
-# PROJECT KNOWLEDGE BASE
-
-## Structure
+# Project guidance
 
 Japanese Tactical Challenge rank-path application. Static HTML, standard CSS and
-TypeScript; Bun, Vite, TypeScript 7 and Biome. No runtime dependencies.
+TypeScript; Bun, Vite and Biome. No runtime dependencies.
+
+## Documentation
+
+The root `README.md` is a public-facing project overview: purpose, features,
+public URL and fan-project notice. Do not add technical content such as the
+implementation, architecture, dependencies, setup, test or deployment commands.
+Keep repository-specific development instructions in `AGENTS.md` instead.
+
+## Source map
 
 | Responsibility | Location |
 |---|---|
 | Static form, row/alert templates, early theme | `index.html` |
 | Shared SVG icon geometry, referenced with use | `public/icons.svg` |
-| Debounce, IME, strategy, result rendering | `src/app/main.ts` |
-| Theme tokens and responsive/step styling | `src/app/index.css` |
-| System/Light/Dark preference and browser metadata | `src/app/theme.ts` |
-| Native Popover, About dialog and positioning fallback | `src/app/menu.ts` |
-| Validated schema 1 localStorage | `src/utils/config.ts` |
-| Rank input and pattern tests | `index.html`, `tests/rankInput.test.ts` |
-| Shared rank rules and maximum | `src/utils/rankRules.ts` |
-| Bundled-boundary path calculation | `src/utils/rankCalculator.ts` |
-| O(N) data generator | `scripts/precompute.ts` |
-| Tracked generated data | `src/generated/rank-boundaries.json` |
-| Frozen old algorithm and exhaustive comparisons | `tests/` |
-| Production preview server | `scripts/qa-server.ts` |
+| Input, rendering, theme, menu/dialog and CSS | `src/app/` |
+| Rank rules, calculation and persisted settings | `src/utils/` |
+| Data generation and tracked output | `scripts/precompute.ts`, `src/generated/rank-boundaries.json` |
+| Calculation/input tests, frozen reference and browser regressions | `tests/` |
+| Preview at the production URL prefix | `scripts/qa-server.ts` |
 
 ## Invariants
 
@@ -39,25 +39,25 @@ TypeScript; Bun, Vite, TypeScript 7 and Biome. No runtime dependencies.
   `[max, min]`. Rank 2 with target-second has no path and no result.
 - Range multiplication/flooring must retain the old arithmetic exactly.
   Runtime and generation share `getNextRankRange`; the generator cannot import
-  its own generated data. Regenerate and run all comparisons when rules change.
-- Input uses `type="number"` and `inputmode="numeric"`. Keep the hint associated
-  via `aria-describedby` and suppress native validation popups with `novalidate`.
-  After 200ms, read native validity and convert valid input for calculation.
-  Never rewrite the input value for normalization. Initial empty input has no
-  error styling. The HTML pattern test checks the regex only; number inputs do
-  not enforce `pattern`, so it does not verify browser range/full-width handling.
+  its own generated data. Dev/build use tracked data; regenerate only when rank
+  rules change, then run all 45,000 old/new path comparisons.
+- Rank input uses `type="text"`, `inputmode="numeric"` and `pattern` to accept
+  ASCII/full-width digits, including mixed digits and leading zeros. Keep
+  `aria-describedby` and form `novalidate`. After 200ms, read native validity
+  and NFKC-normalize a copy for calculation; never rewrite the input value.
+  Initial empty input has no error styling.
 - Composition cancels pending parsing; compositionend restarts the debounce.
   Strategy changes use the last completed parse. Form submission cannot navigate.
-- Render the complete vertical path, including all 138 matches. Index 0–5 is
-  primary; 6–10 is secondary only if path length >=11; all other indices are
-  neutral. Apply the same rule to the terminal row.
-- Unchanged DOM rows are reused by a content/tone key to meet throttled timing.
-  Keep the input element and its focus intact. Exceptions go to the result alert.
-- Use one native strategy select with selectedcontent. At <360px, customizable
-  select displays icons only; unsupported browsers use two form rows and retain
-  Japanese labels. At >=360px, both render Japanese labels in a single form row.
+- Render the complete path, including all 138 matches and the terminal row.
+  Preserve row tones and reuse unchanged DOM rows to meet throttled timing;
+  keep input focus intact. Rendering exceptions replace results with an alert.
+  Printing must show the full path without entry/scroll animations.
+- Use one native strategy select with selectedcontent. At normal text size and
+  <360px, customizable select displays icons only; unsupported browsers use two
+  form rows and retain Japanese labels. At >=360px, both use a single form row.
   The closed select keeps a stable width across strategies and centers its label;
-  changing selection must not resize the rank input or wrap the selected label.
+  changing selection must not resize the rank input or wrap the selected label
+  at normal text size. Support 200% text without overlapping controls or overflow.
 - Theme preferences: system/light/dark, rendered as emerald/night. System follows
   OS changes; light/dark remain fixed. The sun/moon button always flips the
   displayed theme. Save System only when the destination matches the current OS
@@ -71,61 +71,48 @@ TypeScript; Bun, Vite, TypeScript 7 and Biome. No runtime dependencies.
 - SVG icons use the same-origin `public/icons.svg` sprite via `%BASE_URL%`.
   Keep only symbol IDs, viewBox and geometry in the sprite; style the SVG hosts
   in CSS. Strategy titles in HTML preserve the native-select emoji fallback.
-- Popover absent: hide trigger and expose ordinary settings controls. Anchor absent: position
-  on opening and follow resize/scroll. Do not add a large polyfill.
+- Popover absent: hide trigger and expose ordinary settings controls. Anchor
+  absent: position on opening and follow resize/scroll; no large polyfill.
 - About uses a native modal dialog with backdrop/Escape dismissal and no close
-  button; contact/GitHub links live there. Closing it
-  returns focus to the menu trigger (or the About button without Popover support).
+  button; contact/GitHub links live there. Closing returns focus to the menu
+  trigger (or the About button without Popover support).
 
-## Commands
+## Development and QA
+
+Use Bun and preserve `bun.lock`. Biome owns formatting/imports (`biome.json`).
+Generated JSON remains compact.
+For behavior changes, run lint, Bun tests, build and browser regressions:
 
 ```sh
-bun install --frozen-lockfile
-bun run dev          # Vite
-bun run precompute   # updates tracked src/generated/rank-boundaries.json
 bun run lint
-bun run fix
-bun test             # includes all 45,000 old/new path comparisons
-bun run build        # strict TypeScript, Vite
-bun run preview      # actual /kuto-ladder/ mount on port 4173
-bun run deploy       # build and publish gh-pages; explicit deployment task only
+bun test
+bun run build
+bun run preview                 # leave running in a separate process
+bun run test:browser msedge
+bun run test:browser firefox
 ```
 
-dev/build use the tracked data; run precompute only when rank rules change.
-Use Bun and preserve bun.lock; do not introduce other package-manager lockfiles.
-Do not mix unrelated dependency updates. Playwright is a dev-only QA dependency.
-Biome owns formatting/imports (two spaces, double quotes, semicolons). Generated
-JSON is excluded from formatting so it stays compact. Tool artifacts are excluded.
-tsconfig files are JSONC, not strict JSON.
+Other commands are in `package.json`. Browser tests use existing Playwright
+installations (`.cache/browsers`, or installed Edge via `msedge`) and target
+`http://localhost:4173/kuto-ladder/`, not the dev server's `/` mount.
+Cover both themes, the 360px boundary, 200% text and native-control fallbacks.
+Keep browser profiles under `.cache/qa/tmp` and verification artifacts under
+`.cache/qa/`; inspect screenshots for visual changes. Windows WebKit is not Safari,
+and simulated viewports/IME events do not replace device/native IME testing.
 
 ## Git workflow
 
-- Use concise Conventional Commit messages, e.g. `fix: preserve input focus`.
-- Do not commit disposable verification code (`.mjs`, `.py`, or other formats),
-  screenshots, or temporary output. Keep them in Git-ignored locations.
+- Use Conventional Commit messages.
+- Keep disposable verification scripts, screenshots and output Git-ignored;
+  permanent regression tests belong in `tests/`.
 - `scripts/` is Git-ignored except `precompute.ts` and `qa-server.ts`.
-  Do not force-add local verification scripts. Regression tests in `tests/`
-  remain tracked.
-
-## QA
-
-Build + Bun tests + browser checks are required for behavior changes.
-Local verification records may live in `ai/v2/verification/` (Git-ignored).
-Use its README commands when available; local scripts are not supplied by a clone.
-Check production builds on their Pages mount, both themes, narrow layouts around
-the 360px breakpoint, and native select/Popover/anchor fallbacks.
-Validate DOM before screenshots, PNG signatures/dimensions, and inspect images.
-Keep browser temp profiles under `.cache/qa/tmp`; Playwright cleans them on close.
-Do not confuse Windows WebKit with Safari or a viewport with a mobile device.
-Synthetic composition events cover application handling, not native IME behavior.
-Report unavailable coverage honestly.
+  Do not force-add local verification scripts.
 
 ## Deployment
 
 - Public URL: https://1m-lcei.github.io/kuto-ladder/.
 - Source lives on `main`; publish its commits with `git push origin main`.
 - `bun run deploy` runs the predeploy build and publishes `dist` to `gh-pages`.
-  It does not push source commits to `main`. There is no custom deploy workflow.
-- Before publishing, run lint, Bun tests and browser checks against the production
-  Pages mount. After publishing, verify the live HTML and JS/CSS match `dist` and
-  exercise input, strategy, theme and menu on the public URL.
+  It does not push source commits to `main`. Deploy only when explicitly requested.
+- Run the QA checks above before publishing. Afterwards, verify live assets match
+  `dist` and exercise input, strategy, theme and menu on the public URL.
