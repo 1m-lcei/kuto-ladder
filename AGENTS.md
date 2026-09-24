@@ -69,6 +69,8 @@ Keep repository-specific development instructions in `AGENTS.md` instead.
   reset settings. Validate stored theme/strategy; unavailable storage is nonfatal.
 - All deployed assets resolve under `/kuto-ladder/`. No rank-data fetches.
 - SVG icons use the same-origin `public/icons.svg` sprite via `%BASE_URL%`.
+  Keep `vite-ignore` on these `use` elements: the explicit base is already
+  expanded, and Vite's dev HTML asset rewriting would prepend it again.
   Keep only symbol IDs, viewBox and geometry in the sprite; style the SVG hosts
   in CSS. Strategy titles in HTML preserve the native-select emoji fallback.
 - Popover absent: hide trigger and expose ordinary settings controls. Anchor
@@ -108,6 +110,11 @@ fail if the port is occupied; do not kill an unrelated server. Run `bun run buil
 before standalone browser commands. Default verification uses Chromium, Firefox
 and WebKit; Edge is an additional local check. Projects share one config and run
 with one worker and no retries. Do not hide regressions with skip/fixme/retries.
+The dev-server asset regression additionally starts Vite on an isolated port
+with file watching disabled, and verifies actual toolbar/link SVG rendering
+under the same URL prefix.
+It runs in the normal browser suite and CI; production-only checks miss dev
+HTML rewriting failures.
 
 Each test owns its state. Use Playwright's clock for debounce/composition checks
 and web-first assertions for DOM updates. Synthetic IME events and resized

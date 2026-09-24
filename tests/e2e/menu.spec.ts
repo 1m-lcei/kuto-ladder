@@ -1,6 +1,6 @@
 // biome-ignore-all lint/style/noNonNullAssertion: The static application owns these elements.
 import assert from "node:assert/strict";
-import { test } from "playwright/test";
+import { expect, test } from "playwright/test";
 import { capture, expectIcons } from "./helpers";
 
 test("anchor fallback follows resize and scroll at 200% text", async ({
@@ -78,11 +78,8 @@ test("ordinary settings and focus return without Popover", async ({
   await ordinary.locator("#about-trigger").click();
   await ordinary.locator("#about-dialog").waitFor({ state: "visible" });
   await ordinary.keyboard.press("Escape");
-  assert(
-    await ordinary
-      .locator("#about-trigger")
-      .evaluate((el) => el === document.activeElement),
-  );
+  await expect(ordinary.locator("#about-dialog")).toBeHidden();
+  await expect(ordinary.locator("#about-trigger")).toBeFocused();
 });
 
 test("menu and About layout, dismissal and focus return", async ({

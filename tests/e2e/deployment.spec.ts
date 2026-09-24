@@ -2,7 +2,41 @@ import { createHash } from "node:crypto";
 import { readdir, readFile } from "node:fs/promises";
 import { resolve } from "node:path";
 import { expect, test } from "playwright/test";
+import { createServer } from "vite";
 import { expectIcons } from "./helpers";
+
+test("dev server renders toolbar icons under the production URL prefix", async ({
+  page,
+}) => {
+  const server = await createServer({
+    cacheDir: ".cache/qa/tmp/vite",
+    // This static check must not watch locked profiles or reload on test traces.
+    server: {
+      host: "127.0.0.1",
+      port: 0,
+      strictPort: true,
+      watch: null,
+      hmr: false,
+    },
+  });
+  try {
+    await server.listen();
+    const url = server.resolvedUrls?.local[0];
+    expect(url).toBeDefined();
+    expect(new URL(url as string).pathname).toBe("/kuto-ladder/");
+    await page.goto(url as string);
+    await expectIcons(page, ".sun, .menu-icon");
+    await page.locator("#theme-toggle").click();
+    await expect(page.locator("html")).toHaveAttribute("data-theme", "night");
+    await expectIcons(page, ".moon, .menu-icon");
+    await page.locator("#menu-trigger").click();
+    await page.locator("#about-trigger").click();
+    await expect(page.locator("#about-dialog")).toBeVisible();
+    await expectIcons(page, ".link-icon");
+  } finally {
+    await server.close();
+  }
+});
 
 test("@smoke published assets match the tested build and primary controls work", async ({
   page,
