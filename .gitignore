@@ -1,26 +1,15 @@
-# Logs
-logs
+# Dependencies, build output and disposable verification
+/node_modules/
+/dist/
+/.cache/
 *.log
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-pnpm-debug.log*
-lerna-debug.log*
-
-node_modules
-dist
-dist-ssr
 *.local
 
-# Local QA artifacts
-.cache/
-.agents/
-ai/
-
-# Local verification scripts
-/scripts/*
-!/scripts/precompute.ts
-!/scripts/qa-server.ts
+# Local source artwork, historical records and developer tools
+/design/
+/archive/
+/.agents/
+/.codegraph/
 
 # Editor directories and files
 .vscode/*
@@ -33,5 +22,3 @@ ai/
 *.njsproj
 *.sln
 *.sw?
-
-assets/

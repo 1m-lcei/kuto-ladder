@@ -1,6 +1,10 @@
-import boundaries from "../generated/rank-boundaries.json";
-import type { PathStep, PathStrategy } from "../types/types";
-import { getNextRankRange, MAX_RANK } from "./rankRules";
+import boundaries from "./generated/rank-boundaries.json";
+import { getNextRankRange, MAX_RANK, type PathStrategy } from "./rank-rules";
+
+export interface PathStep {
+  currentRank: number;
+  nextRankRange: [number, number]; // [max, min]
+}
 
 export function calculatePath(
   startRank: number,

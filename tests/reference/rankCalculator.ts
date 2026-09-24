@@ -1,4 +1,5 @@
-import type { PathStep, PathStrategy } from "../../src/types/types";
+import type { PathStep } from "../../src/rank";
+import type { PathStrategy } from "../../src/rank-rules";
 
 // この関数は事前計算スクリプトとクライアントサイドの両方で必要
 export function getNextRankRange(currentRank: number): [number, number] {

@@ -1,9 +1,9 @@
 // biome-ignore-all lint/style/noNonNullAssertion: Elements are owned by the static HTML/templates.
 import "./theme";
 import "./menu";
-import type { PathStrategy } from "../types/types";
-import { loadConfig, saveConfig } from "../utils/config";
-import { calculatePath } from "../utils/rankCalculator";
+import { calculatePath } from "./rank";
+import type { PathStrategy } from "./rank-rules";
+import { loadConfig, saveConfig } from "./settings";
 
 const input = document.querySelector<HTMLInputElement>("#rank")!;
 const select = document.querySelector<HTMLSelectElement>(

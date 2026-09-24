@@ -1,6 +1,9 @@
 import { mkdirSync, writeFileSync } from "node:fs";
-import type { PathStrategy } from "../src/types/types";
-import { getNextRankRange, MAX_RANK } from "../src/utils/rankRules";
+import {
+  getNextRankRange,
+  MAX_RANK,
+  type PathStrategy,
+} from "../src/rank-rules";
 
 export function generateBoundaries(): Record<PathStrategy, number[]> {
   const boundaries = {

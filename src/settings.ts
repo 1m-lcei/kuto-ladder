@@ -1,4 +1,4 @@
-import type { PathStrategy } from "../types/types";
+import type { PathStrategy } from "./rank-rules";
 
 const CONFIG_KEY = "kuto-ladder-config";
 const CONFIG_VERSION = 1;

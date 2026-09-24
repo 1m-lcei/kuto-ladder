@@ -25,11 +25,11 @@ Keep repository-specific development instructions in `AGENTS.md` instead.
 |---|---|
 | Static form, row/alert templates, early theme | `index.html` |
 | Shared SVG icon geometry, referenced with use | `public/icons.svg` |
-| Input, rendering, theme, menu/dialog and CSS | `src/app/` |
-| Rank rules, calculation and persisted settings | `src/utils/` |
+| Input, rendering, theme, menu/dialog and CSS | `src/main.ts`, `src/menu.ts`, `src/theme.ts`, `src/styles.css` |
+| Rank rules, calculation and persisted settings | `src/rank.ts`, `src/rank-rules.ts`, `src/settings.ts` |
 | Data generation and tracked output | `scripts/precompute.ts`, `src/generated/rank-boundaries.json` |
 | Calculation/input tests, frozen reference and browser regressions | `tests/` |
-| Preview at the production URL prefix | `scripts/qa-server.ts` |
+| Preview at the production URL prefix | Vite preview (`bun run preview`) |
 
 ## Invariants
 
@@ -79,40 +79,135 @@ Keep repository-specific development instructions in `AGENTS.md` instead.
 
 ## Development and QA
 
-Use Bun and preserve `bun.lock`. Biome owns formatting/imports (`biome.json`).
-Generated JSON remains compact.
-For behavior changes, run lint, Bun tests, build and browser regressions:
+Use Bun 1.4.2 (`packageManager` in `package.json`), Node.js 24 LTS or newer,
+and the committed `bun.lock`. CI uses Node.js 24.21.0 and Ubuntu 24.04.
+Install dependencies with `bun install --frozen-lockfile`; install the matching
+browser binaries with `bun x playwright install chromium firefox webkit`.
+Linux also needs `--with-deps` and Japanese fonts (`fonts-noto-cjk`).
+Browser binaries normally use Playwright's standard user cache. If Windows blocks
+Firefox activation there, set `PLAYWRIGHT_BROWSERS_PATH` to the absolute repository
+`.cache/browsers` path for both installation and test commands. Install the matching
+revisions there; never reuse an incompatible old engine or silently skip it.
 
 ```sh
-bun run lint
-bun test
-bun run build
-bun run preview                 # leave running in a separate process
-bun run test:browser msedge
-bun run test:browser firefox
+bun run dev             # http://localhost:5173/kuto-ladder/
+bun run verify          # check, typecheck, unit tests, build, three browsers
+bun run test:edge       # same browser tests using installed Microsoft Edge
+bun run test:performance
 ```
 
-Other commands are in `package.json`. Browser tests use existing Playwright
-installations (`.cache/browsers`, or installed Edge via `msedge`) and target
-`http://localhost:4173/kuto-ladder/`, not the dev server's `/` mount.
-Cover both themes, the 360px boundary, 200% text and native-control fallbacks.
-Keep browser profiles under `.cache/qa/tmp` and verification artifacts under
-`.cache/qa/`; inspect screenshots for visual changes. Windows WebKit is not Safari,
-and simulated viewports/IME events do not replace device/native IME testing.
+`bun test` is scoped to `tests/unit/` by `bunfig.toml`. `bun run check` checks
+formatting, imports and lint; `bun run fix` applies Biome fixes. The build does
+not run type checking by itself; `verify` is the complete acceptance command.
+Generated JSON remains compact and is checked for reproducibility, not rebuilt
+on every build. The frozen reference is independent of the production algorithm.
+
+Browser tests use Playwright Test (`playwright/test`) and built `dist` at
+`http://127.0.0.1:4173/kuto-ladder/`. Playwright owns the preview process and will
+fail if the port is occupied; do not kill an unrelated server. Run `bun run build`
+before standalone browser commands. Default verification uses Chromium, Firefox
+and WebKit; Edge is an additional local check. Projects share one config and run
+with one worker and no retries. Do not hide regressions with skip/fixme/retries.
+
+Each test owns its state. Use Playwright's clock for debounce/composition checks
+and web-first assertions for DOM updates. Synthetic IME events and resized
+viewports do not replace native IME or device testing. Windows WebKit is not
+Safari. Keep the native-control and motion fallbacks, print checks, both themes,
+360px boundary and 200% text checks. Inspect the representative PNGs for visual
+changes; taking a screenshot alone is not a visual assertion. There are no
+committed image snapshots or automatic baseline updates.
+
+`TEST_BASE_URL` overrides the target URL (include its trailing slash) and disables
+local server startup. `TEST_DIST_DIR` supplies the exact artifact to compare with
+that URL; it defaults to `dist`. `bun run test:smoke` runs only the `@smoke` test,
+which checks every deployed HTML/JS/CSS/SVG/WebP byte and the primary controls.
+It allows up to 120 seconds for CDN propagation. Do not rebuild the comparison
+artifact after publication.
+
+### Performance
+
+`bun run test:performance` uses installed Edge at normal and 6x CPU load, with
+30 samples per initial render, strategy change and longest-path update at 1280x900.
+Report all raw samples and p95. Initial render and alternating strategy changes use
+rank 123; longest-path updates alternate 15001/15000 in match-heavy mode.
+Timing starts at the real debounce callback (or strategy
+event), ending at requestAnimationFrame plus a timer; the 200ms debounce is not
+part of the render budget. Budgets are 50ms normally and 100ms at 6x load.
+For rendering changes, measure before and after in the same browser/environment.
+Save the first `render.json` outside the next run's output directory, then set
+`PERFORMANCE_BASELINE` to that file: each p95 must also stay within baseline +5ms.
+CI checks DOM reuse deterministically; these host-sensitive timing tests run
+locally, outside the regular CI suite. Do not relax budgets to get a green run.
+
+### Files and records
+
+| Location | Purpose and lifetime |
+|---|---|
+| `tests/unit/`, `tests/e2e/`, `tests/performance/` | Maintained, committed checks |
+| `tests/reference/` | Frozen comparison implementation |
+| `scripts/` | Maintained project tools; ordinary Git tracking |
+| `design/` | Local editable artwork and conversion commands; keep |
+| `archive/` | Local historical records; not executable verification dependencies |
+| `.cache/scratch/<task>/` | Disposable probes; remove after the task |
+| `.cache/qa/results/` | Playwright screenshots, traces, print output and measurements |
+| `.cache/qa/report/` | Latest HTML report |
+| `.cache/qa/tmp/` | Browser profiles and temporary files |
+
+`design/`, `archive/`, `.cache/`, `.agents/` and `.codegraph/` are Git-ignored.
+Do not assume ignored artwork is backed up by Git. Archive source paths and
+SHA-256 hashes before clearing old records. Remove temporary profiles only after
+their browser processes have exited. Playwright replaces its results/report on
+subsequent runs; copy a baseline you still need before running another suite.
+Do not scatter probes in the repository root or `scripts/`.
+
+### Shared agent skill
+
+Keep `skills-lock.json` committed and install modern-web-guidance locally under
+`.agents/skills/`. From the repository root:
+
+```sh
+bun x skills add GoogleChrome/modern-web-guidance --skill modern-web-guidance --agent codex --yes
+```
+
+Review lock-file changes as skill updates. Follow its guidance for frontend work;
+the skill is developer assistance, not a build or CI dependency. CodeGraph is
+also local assistance; never create an index merely to run tests.
 
 ## Git workflow
 
-- Use Conventional Commit messages.
-- Keep disposable verification scripts, screenshots and output Git-ignored;
-  permanent regression tests belong in `tests/`.
-- `scripts/` is Git-ignored except `precompute.ts` and `qa-server.ts`.
-  Do not force-add local verification scripts.
+Use Conventional Commit messages. Keep maintained checks in `tests/`; never
+force-add disposable files. The normal source branch is `main`.
+A completed local task may include commits without pushing them. Push, publication
+and GitHub settings changes require authorization for that task.
 
-## Deployment
+## CI and deployment
 
-- Public URL: https://1m-lcei.github.io/kuto-ladder/.
-- Source lives on `main`; publish its commits with `git push origin main`.
-- `bun run deploy` runs the predeploy build and publishes `dist` to `gh-pages`.
-  It does not push source commits to `main`. Deploy only when explicitly requested.
-- Run the QA checks above before publishing. Afterwards, verify live assets match
-  `dist` and exercise input, strategy, theme and menu on the public URL.
+The public URL is https://1m-lcei.github.io/kuto-ladder/.
+`.github/workflows/ci.yml` verifies PRs to main and pushes to main. Its deploy job
+runs only after verification succeeds on main (including a manual run on main).
+It downloads and publishes the exact Pages artifact produced by verify, then
+uses that same artifact for the live smoke check. It does not rebuild or push a
+gh-pages branch. There is no local deploy command or gh-pages package.
+
+Actions are pinned to verified release commits. Only deploy receives `pages:write`
+and `id-token:write`. PR runs replace older runs; main runs are serialized so an
+older deployment cannot finish after a newer one. Reports and failure traces are
+retained for 14 days; browser profiles are not uploaded.
+
+### One-time repository settings (owner action)
+
+1. Enable GitHub Actions and allow the pinned official actions plus oven-sh/setup-bun.
+2. Set Settings > Pages > Build and deployment > Source to **GitHub Actions**.
+3. Restrict the `github-pages` environment to main; no required reviewers are
+   needed for automatic publication.
+4. After the first CI run, require the `verify` status check on main if using
+   branch protection; a second human review is not required for this solo project.
+
+These settings and a successful hosted Actions run cannot be certified by local
+checks. The first `git push origin main` starts verification and publication once
+Pages is configured. A failed verification prevents deployment. A failed live
+smoke check marks deploy failed; it does not imply the previous deployment was
+restored. Revert the faulty source commit and push through the same verified
+pipeline to roll back. After switching Pages to Actions, the old remote gh-pages
+branch is unused and may be deleted separately; local cleanup does not delete
+remote refs.

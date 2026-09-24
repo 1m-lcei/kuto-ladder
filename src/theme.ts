@@ -1,5 +1,5 @@
 // biome-ignore-all lint/style/noNonNullAssertion: Elements are owned by the static HTML/templates.
-import { loadConfig, saveConfig, type ThemePreference } from "../utils/config";
+import { loadConfig, saveConfig, type ThemePreference } from "./settings";
 
 declare global {
   interface Window {

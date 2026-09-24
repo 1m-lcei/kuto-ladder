@@ -1,7 +1,8 @@
 import { defineConfig } from "vite";
 
-export default defineConfig(({ command }) => ({
-  base: command === "build" ? "/kuto-ladder/" : "/",
+export default defineConfig({
+  base: "/kuto-ladder/",
+  appType: "mpa",
   plugins: [
     {
       name: "strip-html-comments",
@@ -13,4 +14,4 @@ export default defineConfig(({ command }) => ({
       },
     },
   ],
-}));
+});

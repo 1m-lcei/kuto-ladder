@@ -1,13 +1,13 @@
 import { expect, test } from "bun:test";
-import { generateBoundaries } from "../scripts/precompute";
-import boundaries from "../src/generated/rank-boundaries.json";
-import { calculatePath } from "../src/utils/rankCalculator";
-import { getNextRankRange } from "../src/utils/rankRules";
+import { generateBoundaries } from "../../scripts/precompute";
+import boundaries from "../../src/generated/rank-boundaries.json";
+import { calculatePath } from "../../src/rank";
+import { getNextRankRange } from "../../src/rank-rules";
 import {
   calculatePath as referencePath,
   getNextRankRange as referenceRange,
-} from "./reference/rankCalculator";
-import { referenceData } from "./reference/rankData";
+} from "../reference/rankCalculator";
+import { referenceData } from "../reference/rankData";
 
 const data = referenceData();
 for (const strategy of ["efficient", "target-second", "match-heavy"] as const) {
