@@ -1,7 +1,7 @@
 // biome-ignore-all lint/style/noNonNullAssertion: The static application owns these elements.
 import assert from "node:assert/strict";
 import { writeFile } from "node:fs/promises";
-import { test } from "playwright/test";
+import { expect, test } from "playwright/test";
 import { capture, expectIcons } from "./helpers";
 
 for (const dark of [false, true]) {
@@ -183,7 +183,7 @@ test("printing reveals every row without animations", async ({
         const detail = getComputedStyle(row.querySelector(".rank-detail")!);
         const marker = getComputedStyle(row, "::after");
         return (
-          [detail, marker].every(
+          [getComputedStyle(row), detail, marker].every(
             (style) =>
               style.opacity === "1" &&
               style.filter === "none" &&
@@ -214,6 +214,28 @@ test("printing reveals every row without animations", async ({
       JSON.stringify(await page.locator(".rank-detail").allTextContents()),
     );
   }
+});
+
+test("longest path remains interactive with motion enabled", async ({
+  page,
+  baseURL,
+}) => {
+  await page.emulateMedia({ reducedMotion: "no-preference" });
+  await page.goto(baseURL!);
+  await page.locator("#rank").fill("15001");
+  await page.locator(".rank-step").first().waitFor();
+  await page.locator("select").selectOption("match-heavy");
+  await expect(page.locator(".rank-step")).toHaveCount(139);
+  await page.locator("#menu-trigger").click();
+  await expect(page.locator("#header-menu")).toBeVisible();
+  await page.keyboard.press("Escape");
+  await expect(page.locator("#header-menu")).toBeHidden();
+  const terminal = page.locator(".rank-number").last();
+  await terminal.scrollIntoViewIfNeeded();
+  await expect(terminal).toHaveText("1位");
+  await expect(terminal).toBeInViewport();
+  await expect(page.locator(".rank-step").last()).toHaveCSS("opacity", "1");
+  await expect(page.locator(".rank-detail").last()).toHaveCSS("opacity", "1");
 });
 
 test("reduced motion and unsupported CSS/select fallbacks", async ({
@@ -264,7 +286,7 @@ test("reduced motion and unsupported CSS/select fallbacks", async ({
     assert.equal(await plain.locator(".rank-step").count(), 139);
     if (mode === "reduced" || mode === "unsupported-motion") {
       assert(
-        await plain.locator(".rank-detail").evaluateAll((rows) =>
+        await plain.locator(".rank-step, .rank-detail").evaluateAll((rows) =>
           rows.every((row) => {
             const style = getComputedStyle(row);
             return (
