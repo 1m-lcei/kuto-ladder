@@ -68,9 +68,10 @@ Keep repository-specific development instructions in `AGENTS.md` instead.
 - Storage key `kuto-ladder-config`, CONFIG_VERSION=1; product version does not
   reset settings. Validate stored theme/strategy; unavailable storage is nonfatal.
 - All deployed assets resolve under `/kuto-ladder/`. No rank-data fetches.
-- SVG icons use the same-origin `public/icons.svg` sprite via `%BASE_URL%`.
-  Keep `vite-ignore` on these `use` elements: the explicit base is already
-  expanded, and Vite's dev HTML asset rewriting would prepend it again.
+- SVG icons use the same-origin `public/icons.svg` sprite via `./icons.svg#id`.
+  `base` in `vite.config.ts` defines the mount point in dev and build. Keep
+  sprite URLs relative to the entry page, including select options and templates;
+  do not prepend `%BASE_URL%` or add `vite-ignore` attributes.
   Keep only symbol IDs, viewBox and geometry in the sprite; style the SVG hosts
   in CSS. Strategy titles in HTML preserve the native-select emoji fallback.
 - Popover absent: hide trigger and expose ordinary settings controls. Anchor
@@ -115,6 +116,8 @@ with file watching disabled, and verifies actual toolbar/link SVG rendering
 under the same URL prefix.
 It runs in the normal browser suite and CI; production-only checks miss dev
 HTML rewriting failures.
+Vite's regular dev watcher excludes `.cache/` so test traces do not reload the
+application and locked browser profiles do not crash the server.
 
 Each test owns its state. Use Playwright's clock for debounce/composition checks
 and web-first assertions for DOM updates. Synthetic IME events and resized
